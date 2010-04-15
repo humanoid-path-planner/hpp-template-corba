@@ -1,0 +1,2 @@
+This package implements a CORBA server to send request to genom module hrp2.
+This is an ad-hoc implementation.

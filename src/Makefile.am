@@ -15,7 +15,7 @@ libhrp2_server_la_SOURCES =		\
 	server-private.hh
 
 libhrp2_server_la_LIBADD = 					\
-	$(top_builddir)/idl/hpp/corbaserver/libcorba-stubs.la	\
+	$(top_builddir)/idl/hpp/hrp2/libcorba-stubs.la	\
 	$(HPP_UTIL_LIBS)					\
 	$(HRP2_LIBS)
 
@@ -25,36 +25,33 @@ hrp2_server_SOURCES = hrp2-server.cc
 hrp2_server_LDADD = libhrp2-server.la
 
 # Python bindings
-PYTHON_MODULENAME=hpp_corbaserver
+PYTHON_MODULENAME=hpp_hrp2
 
 OMNIIDLFLAGS =						\
-		-I $(top_srcdir)/idl/hpp/corbaserver \
+		-I $(top_srcdir)/idl/hpp/hrp2 \
 		-bpython				\
 		-Wbpackage=$(PYTHON_MODULENAME)
 
 hppPythondir = $(DESTDIR)$(prefix)/$(PYTHON_SITELIB)
 
 nobase_hppPython_DATA = 			\
-	hpp_corbaserver/hrp2_idl.py
+	hpp_hrp2/hrp2_idl.py
 
 nobase_hppPython_DATA += 			\
 	hpp/__init__.py				\
-	hpp/corbaserver/__init__.py		\
-	hpp/corbaserver/client.py		\
-	hpp/corbaserver/problem.py		\
-	hpp/corbaserver/walk.py
+	hpp/hrp2/__init__.py		\
+	hpp/hrp2/client.py		\
+	hpp/hrp2/problem.py		\
+	hpp/hrp2/walk.py
 
 install-data-local:
-	$(MKDIR_P) "$(hppPythondir)/hpp_corbaserver/"
-	cp -rf hpp_corbaserver/ "$(hppPythondir)"
+	$(MKDIR_P) "$(hppPythondir)/hpp_hrp2/"
+	cp -rf hpp_hrp2/ "$(hppPythondir)"
 
-hpp_corbaserver/%_idl.py:	\
-		$(HPPCORBASERVER_PREFIX)/share/idl/hpp/corbaserver/%.idl \
+hpp_hrp2/%_idl.py:	\
+		$(top_builddir)/idl/hpp/hrp2/%.idl \
 		$(top_builddir)/config.status
 	$(OMNIIDL) $(OMNIIDLFLAGS) "$<"
 
 clean-local:
-	rm -rf hpp_corbaserver
-
-EXTRA_DIST += 				\
-	example.py
+	rm -rf hpp_hrp2

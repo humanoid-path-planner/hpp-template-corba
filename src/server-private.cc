@@ -1,6 +1,6 @@
 // Copyright (C) 2009, 2010 by Florent Lamiraux, Thomas Moulard, JRL.
 //
-// This file is part of the hpp-corbaserver.
+// This file is part of the hrp2-server.
 //
 // This software is provided "as is" without warranty of any kind,
 // either expressed or implied, including but not limited to the
@@ -18,25 +18,25 @@
 //FIXME: remove me.
 #define HPPCI_CATCH(msg, ret)						\
   catch(CORBA::SystemException&) {					\
-    hppDout (error, "hppCorbaServer: CORBA::SystemException: " << msg);	\
+    hppDout (error, "hrp2Server: CORBA::SystemException: " << msg);	\
     return ret;								\
   }									\
   catch(CORBA::Exception&) {						\
-    hppDout (error, "hppCorbaServer: CORBA::Exception: " << msg);	\
+    hppDout (error, "hrp2Server: CORBA::Exception: " << msg);	\
     return ret;								\
   }									\
   catch(omniORB::fatalException& fe) {					\
-    hppDout (error, "hppCorbaServer: CORBA::fatalException: " << msg);	\
+    hppDout (error, "hrp2Server: CORBA::fatalException: " << msg);	\
     return ret;								\
   }									\
   catch(...) {								\
-    hppDout (error, "hppCorbaServer: unknown exception: " << msg);	\
+    hppDout (error, "hrp2Server: unknown exception: " << msg);	\
     return ret;								\
   }
 
 namespace hpp
 {
-  namespace corbaServer
+  namespace hrp2Server
   {
     namespace impl
     {
@@ -57,7 +57,7 @@ namespace hpp
       }
 
       bool
-      Server::createAndActivateServers (corbaServer::Server* inHppciServer)
+      Server::createAndActivateServers (hrp2Server::Server* inHppciServer)
       {
 	try {
 	  hrp2Servant_ = new Hrp2 (inHppciServer);
@@ -113,8 +113,8 @@ namespace hpp
 	  // Bind a context called "hpp" to the root context:
 
 	  contextName.length(1);
-	  contextName[0].id   = (const char*) "hpp";       // string copied
-	  contextName[0].kind = (const char*) "plannerContext"; // string copied
+	  contextName[0].id   = (const char*) "hpp";   // string copied
+	  contextName[0].kind = (const char*) "genom"; // string copied
 	  // Note on kind: The kind field is used to indicate the type
 	  // of the object. This is to avoid conventions such as that used
 	  // by files (name.type -- e.g. hpp.ps = postscript etc.)
@@ -185,5 +185,5 @@ namespace hpp
       }
 
     } // end of namespace impl.
-  } // end of namespace corbaServer.
+  } // end of namespace hrp2Server.
 } // end of namespace hpp.

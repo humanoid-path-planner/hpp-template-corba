@@ -1,6 +1,6 @@
 // Copyright (C) 2010 by Thomas Moulard, CNRS.
 //
-// This file is part of the hpp-corbaserver.
+// This file is part of the hpp-hrp2.
 //
 // This software is provided "as is" without warranty of any kind,
 // either expressed or implied, including but not limited to the
@@ -16,7 +16,7 @@
 
 namespace hpp
 {
-  namespace corbaServer
+  namespace hrp2Server
   {
     class Server;
 
@@ -34,7 +34,7 @@ namespace hpp
 
       class InternalCorbaObject;
     }
-  } // end of namespace corbaServer.
+  } // end of namespace hrp2Server.
 } // end of namespace hpp.
 
 #endif //! HRP2_SERVER_FWD_HH

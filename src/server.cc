@@ -1,6 +1,6 @@
 // Copyright (C) 2009, 2010 by Florent Lamiraux, Thomas Moulard, JRL.
 //
-// This file is part of the hpp-corbaserver.
+// This file is part of the hrp2-server.
 //
 // This software is provided "as is" without warranty of any kind,
 // either expressed or implied, including but not limited to the
@@ -14,32 +14,32 @@
 
 #include <hpp/util/debug.hh>
 
-#include "hpp/corbaserver/server.hh"
+#include "hpp/hrp2/server.hh"
 #include "server-private.hh"
 
 
 //FIXME: remove me.
 #define HPPCI_CATCH(msg, ret)						\
   catch(CORBA::SystemException&) {					\
-    hppDout (error, "hppCorbaServer: CORBA::SystemException: " << msg);	\
+    hppDout (error, "hrp2Server: CORBA::SystemException: " << msg);	\
     return ret;								\
   }									\
   catch(CORBA::Exception&) {						\
-    hppDout (error, "hppCorbaServer: CORBA::Exception: " << msg);	\
+    hppDout (error, "hrp2Server: CORBA::Exception: " << msg);	\
     return ret;								\
   }									\
   catch(omniORB::fatalException& fe) {					\
-    hppDout (error, "hppCorbaServer: CORBA::fatalException: " << msg);	\
+    hppDout (error, "hrp2Server: CORBA::fatalException: " << msg);	\
     return ret;								\
   }									\
   catch(...) {								\
-    hppDout (error, "hppCorbaServer: unknown exception: " << msg);	\
+    hppDout (error, "hrp2Server: unknown exception: " << msg);	\
     return ret;								\
   }
 
 namespace hpp
 {
-  namespace corbaServer
+  namespace hrp2Server
   {
     using CORBA::Exception;
     using CORBA::Object_var;
@@ -187,7 +187,7 @@ namespace hpp
 	CosNaming::Name objectName;
 	objectName.length(1);
 	objectName[0].id   = (const char*) "hrp2";   // string copied
-	objectName[0].kind = (const char*) "hpp"; // string copied
+	objectName[0].kind = (const char*) "server"; // string copied
 
 	if(!attPrivate->bindObjectToName(hrp2Obj, objectName)) {
 	  return -1;
@@ -219,5 +219,5 @@ namespace hpp
       return 0;
     }
 
-  } // end of namespace corbaServer.
+  } // end of namespace hrp2Server.
 } // end of namespace hpp.

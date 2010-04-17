@@ -5,10 +5,10 @@ AC_PREREQ([2.63])
 ## --------------------- ##
 ## Package configuration ##
 ## --------------------- ##
-AC_INIT([hpp-corbaserver],
+AC_INIT([hrp2-server],
         [m4_esyscmd(build-aux/git-version-gen .tarball-version)],
 	[hpp@laas.fr],
-	[hpp-corbaserver])
+	[hrp2-server])
 
 # Auxiliary files.
 AC_CONFIG_AUX_DIR([build-aux])
@@ -47,20 +47,12 @@ JRL_CXX_WARNINGS([[-Wall],
 # Macros are stored in build-aux.
 AC_CONFIG_MACRO_DIR([build-aux])
 
-## --------------------------------------------- ##
-## Optionally enable OpenHRP integration         ##
-## --------------------------------------------- ##
-AC_ARG_ENABLE([openhrp],
-[AS_HELP_STRING([--enable-openhrp],
- [enable OpenHRP (disabled by default)])],
-[AC_DEFINE([HPP_CORBASERVER_ENABLE_OPENHRP], [1],
-           [Define to 1 if OpenHRP is enabled.])
-enable_openhrp=true])
-AM_CONDITIONAL([OPENHRP], [test x$enable_openhrp = xtrue])
-
 ## ------------------- ##
 ## Additionnal tools.  ##
 ## ------------------- ##
+
+PYTHON_SITELIB=`python -c "from distutils import sysconfig; print sysconfig.get_python_lib(0,0,prefix='')"`
+AC_SUBST(PYTHON_SITELIB)
 
 # Search for misc. common tools.
 AC_PROG_MKDIR_P
@@ -88,7 +80,7 @@ JRL_PKGCONFIGCHECK_ADDDEP([OMNIORB4], [omniORB4])
 AC_SUBST([PACKAGE_CPPNAME],
  [`echo "$PACKAGE_TARNAME" \
   | tr '@<:@:lower:@:>@' '@<:@:upper:@:>@' | sed 's/-/_/g'`])
-AC_CONFIG_FILES([include/hpp/corbaserver/config.hh])
+AC_CONFIG_FILES([include/hpp/hrp2/config.hh])
 
 ## ------------ ##
 ## Test-suite.  ##
@@ -105,7 +97,7 @@ AC_SUBST([PKGCONFIG_DESCRIPTION], ['HPP CORBA server'])
 AC_SUBST([PKGCONFIG_URL], [])
 AC_SUBST([PKGCONFIG_REQUIRES], [`echo "$PKGCONFIG_REQUIRES" | sed 's/, $//'`])
 AC_SUBST([PKGCONFIG_CONFLICTS], [])
-AC_SUBST([PKGCONFIG_LIBS], [-lhpp-corbaserver])
+AC_SUBST([PKGCONFIG_LIBS], [-lhpp-hrp2])
 AC_SUBST([PKGCONFIG_CFLAGS], [])
 
 
@@ -120,7 +112,7 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
   Makefile
   idl/Makefile
-   idl/hpp/corbaserver/Makefile
+   idl/hpp/hrp2/Makefile
   include/Makefile
   doc/Makefile
   src/Makefile

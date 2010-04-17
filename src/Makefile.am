@@ -40,9 +40,7 @@ nobase_hppPython_DATA = 			\
 nobase_hppPython_DATA += 			\
 	hpp/__init__.py				\
 	hpp/hrp2/__init__.py		\
-	hpp/hrp2/client.py		\
-	hpp/hrp2/problem.py		\
-	hpp/hrp2/walk.py
+	hpp/hrp2/client.py
 
 install-data-local:
 	$(MKDIR_P) "$(hppPythondir)/hpp_hrp2/"

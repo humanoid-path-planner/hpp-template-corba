@@ -1,7 +1,7 @@
 include $(top_srcdir)/build-aux/init.mk
 
-IDL_DIRECTORY= $(IDL_PREFIX)/hpp/corbaserver
-IDL_GUARD_PREFIX = "HPP_CORBASERVER_"
+IDL_DIRECTORY= $(IDL_PREFIX)/hpp/hrp2
+IDL_GUARD_PREFIX = "HRP2_SERVER_"
 include $(top_srcdir)/build-aux/idl.mk
 
 include $(top_srcdir)/shared.mk

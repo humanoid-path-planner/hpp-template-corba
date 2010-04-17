@@ -1,6 +1,6 @@
 // Copyright (C) 2010 by Thomas Moulard, CNRS.
 //
-// This file is part of the hpp-corbaserver.
+// This file is part of the hrp2-server.
 //
 // roboptim is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with roboptim.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HPP_CORBASERVER_HH
-# define HPP_CORBASERVER_HH
-# include <hpp/corbaserver/fwd.hh>
-# include <hpp/corbaserver/server.hh>
-#endif //! HPP_CORBASERVER_HH
+#ifndef HRP2_SERVER_HH
+# define HRP2_SERVER_HH
+# include <hpp/hrp2/fwd.hh>
+# include <hpp/hrp2/server.hh>
+#endif //! HRP2_SERVER_HH

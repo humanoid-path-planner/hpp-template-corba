@@ -1,6 +1,6 @@
 // Copyright (C) 2009, 2010 by Florent Lamiraux, Thomas Moulard, JRL.
 //
-// This file is part of the hpp-corbaserver.
+// This file is part of the hrp2-server.
 //
 // This software is provided "as is" without warranty of any kind,
 // either expressed or implied, including but not limited to the
@@ -10,8 +10,8 @@
 
 #ifndef HPP_HRP2SERVER_SERVER_HH
 # define HPP_HRP2SERVER_SERVER_HH
-# include <hpp/corbaserver/fwd.hh>
-# include <hpp/corbaserver/config.hh>
+# include <hpp/hrp2/fwd.hh>
+# include <hpp/hrp2/config.hh>
 
 /**
 
@@ -32,7 +32,7 @@
 /** \brief Corba server communicating with hrp2-genom component.
  *
  This class initializes the Corba server and starts the following Corba interface implementations.
- \li hppCorbaServer::Hrp2Server: to send requests to hrp2-genom component.
+ \li hrp2Server::Hrp2Server: to send requests to hrp2-genom component.
 
  To use this object, call the constructor
 
@@ -57,9 +57,9 @@
 
 namespace hpp
 {
-  namespace corbaServer
+  namespace hrp2Server
   {
-    class HPP_CORBASERVER_DLLAPI Server
+    class HRP2_SERVER_DLLAPI Server
     {
     public:
       /**
@@ -70,12 +70,6 @@ namespace hpp
 
 	 \note It is recommended to configure your Corba implementation through environment
 	 variables and to set argc to 1 and argv to any string.
-
-	 \note It is highly recommended not to enable multi-thread policy in CORBA request processing when using
-	 hppCorbaServer with KPP interface, since OpenGL is not compatible with multi-threading.
-
-	 \note If multi-thread policy is not selected, request hppCorbaServer::ChppciProblem::interruptPathPlanning
-	 will have no effect.
       */
       Server (int argc, const char* argv[], bool multiThread = false);
 
@@ -111,6 +105,6 @@ namespace hpp
       impl::Server* attPrivate;
     };
 
-  } // end of namespace corbaServer.
+  } // end of namespace hrp2Server.
 } // end of namespace hpp.
 #endif

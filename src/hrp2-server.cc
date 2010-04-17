@@ -1,6 +1,6 @@
 // Copyright (C) 2009, 2010 by Florent Lamiraux, Thomas Moulard, JRL.
 //
-// This file is part of the hpp-corbaserver.
+// This file is part of the hrp2-server.
 //
 // This software is provided "as is" without warranty of any kind,
 // either expressed or implied, including but not limited to the
@@ -10,9 +10,9 @@
 
 #include <iostream>
 #include <hpp/util/debug.hh>
-#include "hpp/corbaserver/server.hh"
+#include "hpp/hrp2/server.hh"
 
-using hpp::corbaServer::Server;
+using hpp::hrp2Server::Server;
 
 int
 main (int argc, const char* argv[])

@@ -5,19 +5,16 @@ AC_PREREQ([2.63])
 ## --------------------- ##
 ## Package configuration ##
 ## --------------------- ##
-AC_INIT([hrp2-server],
+AC_INIT([template-corbaserver],
         [m4_esyscmd(build-aux/git-version-gen .tarball-version)],
 	[hpp@laas.fr],
-	[hrp2-server])
+	[template-corbaserver])
 
 # Auxiliary files.
 AC_CONFIG_AUX_DIR([build-aux])
 
 # Automake.
 AM_INIT_AUTOMAKE([1.9.6 dist-bzip2 -Wall nostdinc])
-
-# Check configure is called properly.
-AC_CONFIG_SRCDIR([src/hrp2-server.cc])
 
 ## ------------- ##
 ## C++ compiler  ##
@@ -72,8 +69,6 @@ JRL_PROG_DOXYGEN
 LT_INIT
 
 # Search for pkg-config dependencies.
-JRL_PKGCONFIGCHECK_ADDDEP([HRP2], [hrp2 >= 1.0])
-JRL_PKGCONFIGCHECK_ADDDEP([HPP_UTIL], [hpp-util])
 JRL_PKGCONFIGCHECK_ADDDEP([OMNIORB4], [omniORB4])
 
 # Generate ``config.hh'' header file.
@@ -93,7 +88,7 @@ AM_MISSING_PROG([AUTOM4TE], [autom4te])
 ## Pkg-config.  ##
 ## ------------ ##
 
-AC_SUBST([PKGCONFIG_DESCRIPTION], ['HPP CORBA server'])
+AC_SUBST([PKGCONFIG_DESCRIPTION], ['Template CORBA server'])
 AC_SUBST([PKGCONFIG_URL], [])
 AC_SUBST([PKGCONFIG_REQUIRES], [`echo "$PKGCONFIG_REQUIRES" | sed 's/, $//'`])
 AC_SUBST([PKGCONFIG_CONFLICTS], [])

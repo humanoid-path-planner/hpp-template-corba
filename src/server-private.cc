@@ -18,57 +18,41 @@
 //FIXME: remove me.
 #define HPPCI_CATCH(msg, ret)						\
   catch(CORBA::SystemException&) {					\
-    hppDout (error, "hrp2Server: CORBA::SystemException: " << msg);	\
+    hppDout (error, "CORBA::SystemException: " << msg);	\
     return ret;								\
   }									\
   catch(CORBA::Exception&) {						\
-    hppDout (error, "hrp2Server: CORBA::Exception: " << msg);	\
+    hppDout (error, "CORBA::Exception: " << msg);	\
     return ret;								\
   }									\
   catch(omniORB::fatalException& fe) {					\
-    hppDout (error, "hrp2Server: CORBA::fatalException: " << msg);	\
+    hppDout (error, "CORBA::fatalException: " << msg);	\
     return ret;								\
   }									\
   catch(...) {								\
-    hppDout (error, "hrp2Server: unknown exception: " << msg);	\
+    hppDout (error, "CORBA: unknown exception: " << msg);	\
     return ret;								\
   }
 
 namespace hpp
 {
-  namespace hrp2Server
+  namespace corba
   {
     namespace impl
     {
-      using CORBA::Exception;
-      using CORBA::ORB_init;
-      using CORBA::Object_ptr;
-      using CORBA::Object_var;
-      using CORBA::PolicyList;
-      using CORBA::SystemException;
-      using CORBA::COMM_FAILURE;
-      using omniORB::fatalException;
-
-      typedef CORBA::ORB::InvalidName InvalidName;
-
-      Server::~Server ()
-      {
-	delete hrp2Servantid_;
-      }
-
       bool
-      Server::createAndActivateServers (hrp2Server::Server* inHppciServer)
+      Server::createAndActivateServers ()
       {
 	try {
-	  hrp2Servant_ = new Hrp2 (inHppciServer);
+	  hrp2Servant_ = new Hrp2 ();
 	}
-	HPPCI_CATCH("failed to create implementation of ChppciRobot", false) /* see hppciExceptionHandlingMacros.h */
+	HPPCI_CATCH("failed to create implementation of ChppciRobot", false)
 
 	  try {
 
 	    hrp2Servantid_ = poa_->activate_object(hrp2Servant_);
 	  }
-	HPPCI_CATCH("failed to activate implementation of ChppciRobot", false) /* see hppciExceptionHandlingMacros.h */
+	HPPCI_CATCH("failed to activate implementation of ChppciRobot", false)
 
 	  return true;
       }

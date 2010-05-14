@@ -17,7 +17,6 @@ libhrp2_server_la_SOURCES =		\
 libhrp2_server_la_LIBADD = 					\
 	$(top_builddir)/idl/hpp/hrp2/libcorba-stubs.la	\
 	$(HPP_UTIL_LIBS)					\
-	$(HRP2_LIBS)
 
 # Corba server executable.
 bin_PROGRAMS = hrp2-server

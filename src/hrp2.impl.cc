@@ -25,8 +25,7 @@ namespace hpp
   {
     namespace impl
     {
-      Hrp2::Hrp2(hrp2Server::Server* server) :
-	server_(server)
+      Hrp2::Hrp2()
       {};
       
       Short Hrp2::Init(Boolean initp)

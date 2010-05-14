@@ -1,6 +1,6 @@
 // Copyright (C) 2009, 2010 by Florent Lamiraux, Thomas Moulard, JRL.
 //
-// This file is part of the hrp2-server.
+// This file is part of hpp-template-corba
 //
 // This software is provided "as is" without warranty of any kind,
 // either expressed or implied, including but not limited to the
@@ -10,8 +10,8 @@
 
 #ifndef HPP_HRP2SERVER_SERVER_HH
 # define HPP_HRP2SERVER_SERVER_HH
-# include <hpp/hrp2/fwd.hh>
-# include <hpp/hrp2/config.hh>
+# include <hpp/corba/fwd.hh>
+# include <hpp/corba/config.hh>
 
 /**
 
@@ -57,9 +57,9 @@
 
 namespace hpp
 {
-  namespace hrp2Server
+  namespace corba
   {
-    class HRP2_SERVER_DLLAPI Server
+    template <class T> Server
     {
     public:
       /**
@@ -102,7 +102,35 @@ namespace hpp
       /**
 	 @}
       */
-      impl::Server* attPrivate;
+	/// \brief Create and activate the Corba servers.
+	bool createAndActivateServers (hrp2Server::Server* server);
+
+	CORBA::ORB_var orb_;
+	PortableServer::POA_var poa_;
+
+	/// \brief Implementation of object Hrp2
+	T* hrp2Servant_;
+
+	/// \brief It seems that we need to store this object to
+	/// deactivate the server.
+	PortableServer::ObjectId* hrp2Servantid_;
+
+	/// \brief Corba context.
+	CosNaming::NamingContext_var hppContext_;
+
+	/// \brief Create context.
+	bool createHppContext ();
+
+	/// \brief Store objects in Corba name service.
+	bool
+	bindObjectToName
+	(CORBA::Object_ptr objref, CosNaming::Name objectName);
+
+
+	/// \brief Deactivate and destroy servers
+	///
+	/// Destroying active servers raises a Corba exception.
+	void deactivateAndDestroyServers ();
     };
 
   } // end of namespace hrp2Server.

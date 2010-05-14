@@ -16,45 +16,13 @@
 
 namespace hpp
 {
-  namespace hrp2Server
+  namespace corba
   {
     namespace impl
     {
-      class Server
+      template class <T> Server
       {
       public:
-	~Server ();
-
-	/// \brief Create and activate the Corba servers.
-	bool createAndActivateServers (hrp2Server::Server* server);
-
-      private:
-	CORBA::ORB_var orb_;
-	PortableServer::POA_var poa_;
-
-	/// \brief Implementation of object Hrp2
-	Hrp2* hrp2Servant_;
-
-	/// \brief It seems that we need to store this object to
-	/// deactivate the server.
-	PortableServer::ObjectId* hrp2Servantid_;
-
-	/// \brief Corba context.
-	CosNaming::NamingContext_var hppContext_;
-
-	/// \brief Create context.
-	bool createHppContext ();
-
-	/// \brief Store objects in Corba name service.
-	bool
-	bindObjectToName
-	(CORBA::Object_ptr objref, CosNaming::Name objectName);
-
-
-	/// \brief Deactivate and destroy servers
-	///
-	/// Destroying active servers raises a Corba exception.
-	void deactivateAndDestroyServers ();
 
 	friend class hrp2Server::Server;
       };

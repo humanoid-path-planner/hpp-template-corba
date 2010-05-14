@@ -29,9 +29,6 @@ namespace hpp
       
 	virtual Short Init(Boolean initp) throw (SystemException);
 
-	/// \brief Pointer to the object owning this
-	hrp2Server::Server* server_;
-
       };
     } // end of namespace impl.
   } // end of namespace hrp2Server.

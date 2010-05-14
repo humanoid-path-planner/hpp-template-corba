@@ -5,10 +5,10 @@ AC_PREREQ([2.63])
 ## --------------------- ##
 ## Package configuration ##
 ## --------------------- ##
-AC_INIT([template-corbaserver],
+AC_INIT([hpp-template-corba],
         [m4_esyscmd(build-aux/git-version-gen .tarball-version)],
 	[hpp@laas.fr],
-	[template-corbaserver])
+	[hpp-template-corba])
 
 # Auxiliary files.
 AC_CONFIG_AUX_DIR([build-aux])
@@ -48,9 +48,6 @@ AC_CONFIG_MACRO_DIR([build-aux])
 ## Additionnal tools.  ##
 ## ------------------- ##
 
-PYTHON_SITELIB=`python -c "from distutils import sysconfig; print sysconfig.get_python_lib(0,0,prefix='')"`
-AC_SUBST(PYTHON_SITELIB)
-
 # Search for misc. common tools.
 AC_PROG_MKDIR_P
 AC_PROG_SED
@@ -70,6 +67,7 @@ LT_INIT
 
 # Search for pkg-config dependencies.
 JRL_PKGCONFIGCHECK_ADDDEP([OMNIORB4], [omniORB4])
+JRL_PKGCONFIGCHECK_ADDDEP([HPP_UTIL], [hpp-util])
 
 # Generate ``config.hh'' header file.
 AC_SUBST([PACKAGE_CPPNAME],

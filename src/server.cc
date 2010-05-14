@@ -1,6 +1,6 @@
 // Copyright (C) 2009, 2010 by Florent Lamiraux, Thomas Moulard, JRL.
 //
-// This file is part of the hrp2-server.
+// This file is part of hpp-template-corba
 //
 // This software is provided "as is" without warranty of any kind,
 // either expressed or implied, including but not limited to the
@@ -39,14 +39,18 @@
 
 namespace hpp
 {
-  namespace hrp2Server
+  namespace corba
   {
     using CORBA::Exception;
     using CORBA::Object_var;
     using CORBA::SystemException;
     using CORBA::ORB_init;
     using CORBA::PolicyList;
+    using CORBA::Object_ptr;
+    using CORBA::COMM_FAILURE;
     using omniORB::fatalException;
+
+    typedef CORBA::ORB::InvalidName InvalidName;
 
     namespace
     {
@@ -66,23 +70,19 @@ namespace hpp
     } // end of anonymous namespace.
 
 
-    Server::Server(int argc, const char *argv[], bool inMultiThread)
+    Server<T>::Server(int argc, const char *argv[], bool inMultiThread)
     {
       // Register log function.
       omniORB::setLogFunction (&logFunction);
-
-      attPrivate = new impl::Server;
-
       initORBandServers (argc, argv, inMultiThread);
     }
 
     /// \brief Shutdown CORBA server
     Server::~Server()
     {
-      attPrivate->deactivateAndDestroyServers();
-      attPrivate->orb_->shutdown(0);
-      delete attPrivate;
-      attPrivate = NULL;
+      deactivateAndDestroyServers();
+      orb_->shutdown(0);
+      delete hrp2Servantid_;
     }
 
     /*
@@ -104,20 +104,20 @@ namespace hpp
 	ORB init
       */
       try {
-	attPrivate->orb_ = ORB_init (argc, const_cast<char **> (argv)); //FIXME: handle this properly.
-	if (is_nil(attPrivate->orb_)) {
+	orb_ = ORB_init (argc, const_cast<char **> (argv));
+	if (is_nil(orb_)) {
 	  hppDout (error, "failed to initialize ORB");
 	  return false;
 	}
       }
-      HPPCI_CATCH("failed to initialize ORB", false) /* see hppciExceptionHandlingMacros.h */
+      HPPCI_CATCH("failed to initialize ORB", false)
 
 	/*
 	  ORB init
 	*/
 
 	try {
-	  obj = attPrivate->orb_->resolve_initial_references("RootPOA");
+	  obj = orb_->resolve_initial_references("RootPOA");
 	}
       HPPCI_CATCH("failed to resolve initial references", false) /* see hppciExceptionHandlingMacros.h */
 
@@ -152,7 +152,7 @@ namespace hpp
 	  policyList.length(1);
 	  policyList[0]=PortableServer::ThreadPolicy::_duplicate(threadPolicy);
 
-	  attPrivate->poa_ =
+	  poa_ =
 	    rootPoa->create_POA("child", PortableServer::POAManager::_nil(),
 				policyList);
 
@@ -170,7 +170,7 @@ namespace hpp
 	}
       HPPCI_CATCH("failed to destroy thread policy", false); /* see hppciExceptionHandlingMacros.h */
 
-      return attPrivate->createAndActivateServers(this);
+      return createAndActivateServers();
     }
 
     int Server::startCorbaServer()
@@ -178,9 +178,9 @@ namespace hpp
       try {
 	// Obtain a reference to objects, and register them in
 	// the naming service.
-	Object_var hrp2Obj = attPrivate->hrp2Servant_->_this();
+	Object_var hrp2Obj = hrp2Servant_->_this();
 
-	if (!attPrivate->createHppContext()) {
+	if (!createHppContext()) {
 	  return -1;
 	}
 	// Bind hrp2Obj with name Robot to the hppContext:
@@ -189,13 +189,13 @@ namespace hpp
 	objectName[0].id   = (const char*) "hrp2";   // string copied
 	objectName[0].kind = (const char*) "server"; // string copied
 
-	if(!attPrivate->bindObjectToName(hrp2Obj, objectName)) {
+	if(!bindObjectToName(hrp2Obj, objectName)) {
 	  return -1;
 	}
-	attPrivate->hrp2Servant_->_remove_ref();
+	hrp2Servant_->_remove_ref();
 
 	PortableServer::POAManager_var pman =
-	  attPrivate->poa_->the_POAManager();
+	  poa_->the_POAManager();
 	pman->activate();
       }
       HPPCI_CATCH("failed to start CORBA server", false);
@@ -209,15 +209,143 @@ namespace hpp
       if (loop)
 	{
 	  hppDout (info, "start processing CORBA requests for ever.");
-	  attPrivate->orb_->run();
+	  orb_->run();
 	}
       else
 	{
-	  if (attPrivate->orb_->work_pending())
-	    attPrivate->orb_->perform_work();
+	  if (orb_->work_pending())
+	    orb_->perform_work();
 	}
       return 0;
     }
 
-  } // end of namespace hrp2Server.
+      bool
+      Server::createAndActivateServers ()
+      {
+	try {
+	  hrp2Servant_ = new T ();
+	}
+	HPPCI_CATCH("failed to create implementation of ChppciRobot", false)
+
+	  try {
+
+	    hrp2Servantid_ = poa_->activate_object(hrp2Servant_);
+	  }
+	HPPCI_CATCH("failed to activate implementation of ChppciRobot", false)
+
+	  return true;
+      }
+
+      void Server::deactivateAndDestroyServers()
+      {
+	if (hrp2Servant_) {
+	  poa_->deactivate_object(*hrp2Servantid_);
+	  delete hrp2Servant_;
+	}
+      }
+
+
+      bool Server::createHppContext ()
+      {
+	CosNaming::NamingContext_var rootContext;
+	Object_var localObj;
+	CosNaming::Name contextName;
+
+	try {
+	  // Obtain a reference to the root context of the Name service:
+	  localObj = orb_->resolve_initial_references("NameService");
+	}
+	HPPCI_CATCH("failed to get the name service", false);
+
+	try {
+	  // Narrow the reference returned.
+	  rootContext = CosNaming::NamingContext::_narrow(localObj);
+	  if( is_nil(rootContext) ) {
+	    hppDout (error, "Failed to narrow the root naming context.");
+	    return false;
+	  }
+	}
+	catch(InvalidName& ex) {
+	  // This should not happen!
+	  hppDout (error, "Service required is invalid [does not exist].");
+	  return false;
+	}
+	HPPCI_CATCH("failed to narrow the root naming context.", false);
+
+	try {
+	  // Bind a context called "hpp" to the root context:
+
+	  contextName.length(1);
+	  contextName[0].id   = (const char*) "hpp";   // string copied
+	  contextName[0].kind = (const char*) "genom"; // string copied
+	  // Note on kind: The kind field is used to indicate the type
+	  // of the object. This is to avoid conventions such as that used
+	  // by files (name.type -- e.g. hpp.ps = postscript etc.)
+
+	  try {
+	    // Bind the context to root.
+	    hppContext_ = rootContext->bind_new_context(contextName);
+	  }
+	  catch(CosNaming::NamingContext::AlreadyBound& ex) {
+	    // If the context already exists, this exception will be raised.
+	    // In this case, just resolve the name and assign hppContext
+	    // to the object returned:
+	    Object_var localObj;
+	    localObj = rootContext->resolve(contextName);
+	    hppContext_ = CosNaming::NamingContext::_narrow(localObj);
+	    if( is_nil(hppContext_) ) {
+	      hppDout (error, "Failed to narrow naming context.");
+	      return false;
+	    }
+	  }
+	}
+	catch(COMM_FAILURE& ex) {
+	  hppDout (error, "Caught system exception COMM_FAILURE -- unable to contact the "
+		   << "naming service.");
+	  return false;
+	}
+	catch(SystemException&) {
+	  hppDout (error, "Caught a SystemException while creating the context.");
+	  return false;
+	}
+
+	return true;
+      }
+
+      bool Server::bindObjectToName(Object_ptr objref,
+						 CosNaming::Name objectName)
+      {
+	try {
+	  try {
+	    hppContext_->bind(objectName, objref);
+	  }
+	  catch(CosNaming::NamingContext::AlreadyBound& ex)
+	    {
+	      hppContext_->rebind(objectName, objref);
+	    }
+	  // Note: Using rebind() will overwrite any Object previously bound
+	  //       to /hpp/RobotConfig with localObj.
+	  //       Alternatively, bind() can be used, which will raise a
+	  //       CosNaming::NamingContext::AlreadyBound exception if the name
+	  //       supplied is already bound to an object.
+
+	  // Amendment: When using OrbixNames, it is necessary to first try bind
+	  // and then rebind, as rebind on it's own will throw a NotFoundexception if
+	  // the Name has not already been bound. [This is incorrect behaviour -
+	  // it should just bind].
+	}
+	catch(COMM_FAILURE& ex) {
+	  hppDout (error, "Caught system exception COMM_FAILURE -- unable to contact the "
+		   << "naming service.");
+	  return false;
+	}
+	catch(SystemException&) {
+	  hppDout (error, "Caught a SystemException while binding object to name service.");
+	  return false;
+	}
+
+	return true;
+      }
+
+  } // end of namespace corba.
 } // end of namespace hpp.

@@ -65,15 +65,29 @@ JRL_PROG_DOXYGEN
 # Search for Libtool.
 LT_INIT
 
+AC_ARG_ENABLE([hpp-util],
+	[AS_HELP_STRING([--enable-hpp-util],
+	[use hpp-util for debug and log handling])],
+	[AC_DEFINE([HPP_CORBA_ENABLE_HPP_UTIL], [1],
+           [Define to 1 if hpp-util is enabled.])
+	   enable_hpp_util=true]
+)
+AM_CONDITIONAL([HPP_UTIL], [test x$enable_hpp_util = xtrue])
+
 # Search for pkg-config dependencies.
 JRL_PKGCONFIGCHECK_ADDDEP([OMNIORB4], [omniORB4])
-JRL_PKGCONFIGCHECK_ADDDEP([HPP_UTIL], [hpp-util])
+if test x$enable_hpp_util = xtrue; then
+   JRL_PKGCONFIGCHECK_ADDDEP([HPP_UTIL], [hpp-util])
+AC_SUBST([HPP_CORBA_ENABLE_HPP_UTIL], [1])
+else
+AC_SUBST([HPP_CORBA_ENABLE_HPP_UTIL], [0])
+fi
 
 # Generate ``config.hh'' header file.
 AC_SUBST([PACKAGE_CPPNAME],
  [`echo "$PACKAGE_TARNAME" \
   | tr '@<:@:lower:@:>@' '@<:@:upper:@:>@' | sed 's/-/_/g'`])
-AC_CONFIG_FILES([include/hpp/hrp2/config.hh])
+AC_CONFIG_FILES([include/hpp/corba/config.hh])
 
 ## ------------ ##
 ## Test-suite.  ##
@@ -105,6 +119,7 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
   Makefile
   include/Makefile
+  include/hpp/corba/debug.hh
   doc/Makefile
 ])
 

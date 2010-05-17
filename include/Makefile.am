@@ -6,3 +6,8 @@ nobase_include_HEADERS =			\
 	hpp/corba/doc.hh			\
 	hpp/corba/server.hh			\
 	hpp/corba/server.hxx
+
+debugdir = 					\
+	${includedir}/hpp/corba
+debug_DATA = 					\
+	${builddir}/hpp/corba/debug.hh

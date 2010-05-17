@@ -15,24 +15,24 @@
 #include <pthread.h>
 #include <iostream>
 
-#include <hpp/util/debug.hh>
+#include <hpp/corba/debug.hh>
 
 //FIXME: remove me.
 #define HPP_CORBA_CATCH(msg, ret)						\
   catch(CORBA::SystemException&) {					\
-    hppDout (error, "CORBA::SystemException: " << msg);	\
+    hppCorbaDout (error, "CORBA::SystemException: " << msg);	\
     return ret;								\
   }									\
   catch(CORBA::Exception&) {						\
-    hppDout (error, "CORBA::Exception: " << msg);	\
+    hppCorbaDout (error, "CORBA::Exception: " << msg);	\
     return ret;								\
   }									\
   catch(omniORB::fatalException& fe) {					\
-    hppDout (error, "CORBA::fatalException: " << msg);	\
+    hppCorbaDout (error, "CORBA::fatalException: " << msg);	\
     return ret;								\
   }									\
   catch(...) {								\
-    hppDout (error, "CORBA: unknown exception: " << msg);	\
+    hppCorbaDout (error, "CORBA: unknown exception: " << msg);	\
     return ret;								\
   }
 
@@ -64,7 +64,7 @@ namespace hpp
 
       void logFunction (const char* msg)
       {
-	hppDout (info, "omniORB: " << msg);
+	hppCorbaDout (info, "omniORB: " << msg);
       }
     } // end of anonymous namespace.
 
@@ -105,7 +105,7 @@ namespace hpp
       try {
 	orb_ = ORB_init (argc, const_cast<char **> (argv));
 	if (is_nil(orb_)) {
-	  hppDout (error, "failed to initialize ORB");
+	  hppCorbaDout (error, "failed to initialize ORB");
 	  return false;
 	}
       }
@@ -210,7 +210,7 @@ namespace hpp
     {
       if (loop)
 	{
-	  hppDout (info, "start processing CORBA requests for ever.");
+	  hppCorbaDout (info, "start processing CORBA requests for ever.");
 	  orb_->run();
 	}
       else
@@ -265,13 +265,13 @@ namespace hpp
 	  // Narrow the reference returned.
 	  rootContext = CosNaming::NamingContext::_narrow(localObj);
 	  if( is_nil(rootContext) ) {
-	    hppDout (error, "Failed to narrow the root naming context.");
+	    hppCorbaDout (error, "Failed to narrow the root naming context.");
 	    return false;
 	  }
 	}
 	catch(InvalidName& ex) {
 	  // This should not happen!
-	  hppDout (error, "Service required is invalid [does not exist].");
+	  hppCorbaDout (error, "Service required is invalid [does not exist].");
 	  return false;
 	}
 	HPP_CORBA_CATCH("failed to narrow the root naming context.", false)
@@ -298,18 +298,18 @@ namespace hpp
 	    localObj = rootContext->resolve(contextName);
 	    hppContext_ = CosNaming::NamingContext::_narrow(localObj);
 	    if( is_nil(hppContext_) ) {
-	      hppDout (error, "Failed to narrow naming context.");
+	      hppCorbaDout (error, "Failed to narrow naming context.");
 	      return false;
 	    }
 	  }
 	}
 	catch(COMM_FAILURE& ex) {
-	  hppDout (error, "Caught system exception COMM_FAILURE -- unable to contact the "
+	  hppCorbaDout (error, "Caught system exception COMM_FAILURE -- unable to contact the "
 		   << "naming service.");
 	  return false;
 	}
 	catch(SystemException&) {
-	  hppDout (error, "Caught a SystemException while creating the context.");
+	  hppCorbaDout (error, "Caught a SystemException while creating the context.");
 	  return false;
 	}
 
@@ -339,12 +339,12 @@ namespace hpp
 	  // it should just bind].
 	}
 	catch(COMM_FAILURE& ex) {
-	  hppDout (error, "Caught system exception COMM_FAILURE -- unable to contact the "
+	  hppCorbaDout (error, "Caught system exception COMM_FAILURE -- unable to contact the "
 		   << "naming service.");
 	  return false;
 	}
 	catch(SystemException&) {
-	  hppDout (error, "Caught a SystemException while binding object to name service.");
+	  hppCorbaDout(error, "Caught a SystemException while binding object to name service.");
 	  return false;
 	}
 

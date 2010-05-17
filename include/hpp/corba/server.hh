@@ -102,35 +102,34 @@ namespace hpp
       /**
 	 @}
       */
-	/// \brief Create and activate the Corba servers.
-	bool createAndActivateServers (hrp2Server::Server* server);
+      /// \brief Create and activate the Corba servers.
+      bool createAndActivateServers (hrp2Server::Server* server);
 
-	CORBA::ORB_var orb_;
-	PortableServer::POA_var poa_;
+      CORBA::ORB_var orb_;
+      PortableServer::POA_var poa_;
 
-	/// \brief Implementation of object Hrp2
-	T* hrp2Servant_;
+      /// \brief Implementation of object Hrp2
+      T* hrp2Servant_;
 
-	/// \brief It seems that we need to store this object to
-	/// deactivate the server.
-	PortableServer::ObjectId* hrp2Servantid_;
+      /// \brief It seems that we need to store this object to
+      /// deactivate the server.
+      PortableServer::ObjectId* hrp2Servantid_;
 
-	/// \brief Corba context.
-	CosNaming::NamingContext_var hppContext_;
+      /// \brief Corba context.
+      CosNaming::NamingContext_var hppContext_;
 
-	/// \brief Create context.
-	bool createHppContext ();
+      /// \brief Create context.
+      bool createHppContext ();
 
-	/// \brief Store objects in Corba name service.
-	bool
-	bindObjectToName
-	(CORBA::Object_ptr objref, CosNaming::Name objectName);
+      /// \brief Store objects in Corba name service.
+      bool bindObjectToName (CORBA::Object_ptr objref,
+			     CosNaming::Name objectName);
 
 
-	/// \brief Deactivate and destroy servers
-	///
-	/// Destroying active servers raises a Corba exception.
-	void deactivateAndDestroyServers ();
+      /// \brief Deactivate and destroy servers
+      ///
+      /// Destroying active servers raises a Corba exception.
+      void deactivateAndDestroyServers ();
     };
 
   } // end of namespace hrp2Server.

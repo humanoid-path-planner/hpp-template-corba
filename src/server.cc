@@ -14,26 +14,22 @@
 
 #include <hpp/util/debug.hh>
 
-#include "hpp/hrp2/server.hh"
-#include "server-private.hh"
-
-
 //FIXME: remove me.
-#define HPPCI_CATCH(msg, ret)						\
+#define HPP_CORBA_CATCH(msg, ret)						\
   catch(CORBA::SystemException&) {					\
-    hppDout (error, "hrp2Server: CORBA::SystemException: " << msg);	\
+    hppDout (error, "CORBA::SystemException: " << msg);	\
     return ret;								\
   }									\
   catch(CORBA::Exception&) {						\
-    hppDout (error, "hrp2Server: CORBA::Exception: " << msg);	\
+    hppDout (error, "CORBA::Exception: " << msg);	\
     return ret;								\
   }									\
   catch(omniORB::fatalException& fe) {					\
-    hppDout (error, "hrp2Server: CORBA::fatalException: " << msg);	\
+    hppDout (error, "CORBA::fatalException: " << msg);	\
     return ret;								\
   }									\
   catch(...) {								\
-    hppDout (error, "hrp2Server: unknown exception: " << msg);	\
+    hppDout (error, "CORBA: unknown exception: " << msg);	\
     return ret;								\
   }
 
@@ -82,7 +78,7 @@ namespace hpp
     {
       deactivateAndDestroyServers();
       orb_->shutdown(0);
-      delete hrp2Servantid_;
+      delete servantId_;
     }
 
     /*
@@ -110,7 +106,7 @@ namespace hpp
 	  return false;
 	}
       }
-      HPPCI_CATCH("failed to initialize ORB", false)
+      HPP_CORBA_CATCH("failed to initialize ORB", false)
 
 	/*
 	  ORB init
@@ -119,7 +115,7 @@ namespace hpp
 	try {
 	  obj = orb_->resolve_initial_references("RootPOA");
 	}
-      HPPCI_CATCH("failed to resolve initial references", false) /* see hppciExceptionHandlingMacros.h */
+      HPP_CORBA_CATCH("failed to resolve initial references", false)
 
 	/*
 	  Create thread policy
@@ -141,7 +137,7 @@ namespace hpp
 	      rootPoa->create_thread_policy(PortableServer::MAIN_THREAD_MODEL);
 	  }
 	}
-      HPPCI_CATCH("failed to create thread policy", false) /* see hppciExceptionHandlingMacros.h */
+      HPP_CORBA_CATCH("failed to create thread policy", false)
 
 	/*
 	  Duplicate thread policy
@@ -157,7 +153,7 @@ namespace hpp
 				policyList);
 
 	}
-      HPPCI_CATCH("failed to duplicate thread policy", false) /* see hppciExceptionHandlingMacros.h */
+      HPP_CORBA_CATCH("failed to duplicate thread policy", false)
 
 	/*
 	  Destroy thread policy
@@ -168,37 +164,40 @@ namespace hpp
 	  threadPolicy->destroy();
 
 	}
-      HPPCI_CATCH("failed to destroy thread policy", false); /* see hppciExceptionHandlingMacros.h */
+      HPP_CORBA_CATCH("failed to destroy thread policy", false)
 
       return createAndActivateServers();
     }
 
-    int Server::startCorbaServer()
+    int Server::startCorbaServer(const std::string& contextId,
+				 const std::string& contextKind,
+				 const std::string& objectId,
+				 const std::string& objectKind)
     {
       try {
 	// Obtain a reference to objects, and register them in
 	// the naming service.
-	Object_var hrp2Obj = hrp2Servant_->_this();
+	Object_var object = servant_->_this();
 
-	if (!createHppContext()) {
+	if (!createHppContext(contextId, contextKind)) {
 	  return -1;
 	}
-	// Bind hrp2Obj with name Robot to the hppContext:
+	// Bind object with name Robot to the hppContext:
 	CosNaming::Name objectName;
 	objectName.length(1);
-	objectName[0].id   = (const char*) "hrp2";   // string copied
-	objectName[0].kind = (const char*) "server"; // string copied
+	objectName[0].id   = (const char*) id;   // string copied
+	objectName[0].kind = (const char*) kind; // string copied
 
-	if(!bindObjectToName(hrp2Obj, objectName)) {
+	if(!bindObjectToName(object, objectName)) {
 	  return -1;
 	}
-	hrp2Servant_->_remove_ref();
+	servant_->_remove_ref();
 
 	PortableServer::POAManager_var pman =
 	  poa_->the_POAManager();
 	pman->activate();
       }
-      HPPCI_CATCH("failed to start CORBA server", false);
+      HPP_CORBA_CATCH("failed to start CORBA server", false)
       return 0;
     }
 
@@ -223,29 +222,31 @@ namespace hpp
       Server::createAndActivateServers ()
       {
 	try {
-	  hrp2Servant_ = new T ();
+	  servant_ = new T ();
 	}
-	HPPCI_CATCH("failed to create implementation of ChppciRobot", false)
+	HPP_CORBA_CATCH("failed to create implementation of ChppciRobot", false)
 
 	  try {
 
-	    hrp2Servantid_ = poa_->activate_object(hrp2Servant_);
+	    servantId_ = poa_->activate_object(servant_);
 	  }
-	HPPCI_CATCH("failed to activate implementation of ChppciRobot", false)
+	HPP_CORBA_CATCH("failed to activate implementation of ChppciRobot",
+			false)
 
 	  return true;
       }
 
       void Server::deactivateAndDestroyServers()
       {
-	if (hrp2Servant_) {
-	  poa_->deactivate_object(*hrp2Servantid_);
-	  delete hrp2Servant_;
+	if (servant_) {
+	  poa_->deactivate_object(*servantId_);
+	  delete servant_;
 	}
       }
 
 
-      bool Server::createHppContext ()
+    bool Server::createHppContext (const std::string& id,
+				   const std::string kind)
       {
 	CosNaming::NamingContext_var rootContext;
 	Object_var localObj;
@@ -255,7 +256,7 @@ namespace hpp
 	  // Obtain a reference to the root context of the Name service:
 	  localObj = orb_->resolve_initial_references("NameService");
 	}
-	HPPCI_CATCH("failed to get the name service", false);
+	HPP_CORBA_CATCH("failed to get the name service", false)
 
 	try {
 	  // Narrow the reference returned.
@@ -270,14 +271,14 @@ namespace hpp
 	  hppDout (error, "Service required is invalid [does not exist].");
 	  return false;
 	}
-	HPPCI_CATCH("failed to narrow the root naming context.", false);
+	HPP_CORBA_CATCH("failed to narrow the root naming context.", false)
 
 	try {
 	  // Bind a context called "hpp" to the root context:
 
 	  contextName.length(1);
-	  contextName[0].id   = (const char*) "hpp";   // string copied
-	  contextName[0].kind = (const char*) "genom"; // string copied
+	  contextName[0].id   = (const char*) id;   // string copied
+	  contextName[0].kind = (const char*) kind; // string copied
 	  // Note on kind: The kind field is used to indicate the type
 	  // of the object. This is to avoid conventions such as that used
 	  // by files (name.type -- e.g. hpp.ps = postscript etc.)

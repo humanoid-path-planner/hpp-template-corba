@@ -8,6 +8,9 @@
 //
 // See the COPYING file for more information.
 
+#ifndef HPP_CORBA_SERVER_HXX
+#define HPP_CORBA_SERVER_HXX
+
 #include <errno.h>
 #include <pthread.h>
 #include <iostream>
@@ -350,3 +353,5 @@ namespace hpp
 
   } // end of namespace corba.
 } // end of namespace hpp.
+
+#endif //HPP_CORBA_SERVER_HXX

@@ -104,11 +104,8 @@ AC_CONFIG_HEADERS([config.h])
 # Create Makefiles.
 AC_CONFIG_FILES([
   Makefile
-  idl/Makefile
-   idl/hpp/hrp2/Makefile
   include/Makefile
   doc/Makefile
-  src/Makefile
 ])
 
 # Write files.

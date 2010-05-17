@@ -4,9 +4,7 @@ include $(top_srcdir)/build-aux/init.mk
 ACLOCAL_AMFLAGS = -I build-aux
 
 SUBDIRS = 		\
-	idl		\
 	include		\
-	src		\
 	doc
 
 # Provide bootstrap with the generated package.

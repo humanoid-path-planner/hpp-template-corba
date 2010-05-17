@@ -107,4 +107,6 @@ namespace hpp
 
   } // end of namespace corba.
 } // end of namespace hpp.
+
+#include "hpp/corba/server.hh"
 #endif

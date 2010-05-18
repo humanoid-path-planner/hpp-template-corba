@@ -119,7 +119,7 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
   Makefile
   include/Makefile
-  include/hpp/corba/debug.hh
+  include/hpp/corba/template/debug.hh
   doc/Makefile
 ])
 

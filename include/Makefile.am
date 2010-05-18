@@ -2,12 +2,11 @@ include $(top_srcdir)/build-aux/init.mk
 
 # -- Distribute and install headers
 nobase_include_HEADERS =			\
-	hpp/corba/config.hh			\
-	hpp/corba/doc.hh			\
-	hpp/corba/server.hh			\
-	hpp/corba/server.hxx
+	hpp/corba/template/doc.hh		\
+	hpp/corba/template/server.hh		\
+	hpp/corba/template/server.hxx
 
 debugdir = 					\
-	${includedir}/hpp/corba
+	${includedir}/hpp/corba/template
 debug_DATA = 					\
-	${builddir}/hpp/corba/debug.hh
+	${builddir}/hpp/corba/template/debug.hh

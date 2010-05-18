@@ -8,14 +8,14 @@
 //
 // See the COPYING file for more information.
 
-#ifndef HPP_CORBA_SERVER_HXX
-#define HPP_CORBA_SERVER_HXX
+#ifndef HPP_CORBA_TEMPLATE_SERVER_HXX
+#define HPP_CORBA_TEMPLATE_SERVER_HXX
 
 #include <errno.h>
 #include <pthread.h>
 #include <iostream>
 
-#include <hpp/corba/debug.hh>
+#include <hpp/corba/template/debug.hh>
 
 //FIXME: remove me.
 #define HPP_CORBA_CATCH(msg, ret)						\
@@ -354,4 +354,4 @@ namespace hpp
   } // end of namespace corba.
 } // end of namespace hpp.
 
-#endif //HPP_CORBA_SERVER_HXX
+#endif //HPP_CORBA_TEMPLATE_SERVER_HXX

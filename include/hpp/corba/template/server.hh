@@ -10,8 +10,6 @@
 
 #ifndef HPP_CORBA_SERVER_HH
 # define HPP_CORBA_SERVER_HH
-# include <hpp/corba/fwd.hh>
-# include <hpp/corba/config.hh>
 
 /**
 

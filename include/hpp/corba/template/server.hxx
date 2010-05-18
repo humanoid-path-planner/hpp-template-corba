@@ -18,22 +18,22 @@
 #include <hpp/corba/template/debug.hh>
 
 //FIXME: remove me.
-#define HPP_CORBA_CATCH(msg, ret)						\
-  catch(CORBA::SystemException&) {					\
+#define HPP_CORBA_CATCH(msg, ret)				\
+  catch(CORBA::SystemException&) {				\
     hppCorbaDout (error, "CORBA::SystemException: " << msg);	\
-    return ret;								\
-  }									\
-  catch(CORBA::Exception&) {						\
-    hppCorbaDout (error, "CORBA::Exception: " << msg);	\
-    return ret;								\
-  }									\
-  catch(omniORB::fatalException& fe) {					\
+    return ret;							\
+  }								\
+  catch(CORBA::Exception&) {					\
+    hppCorbaDout (error, "CORBA::Exception: " << msg);		\
+    return ret;							\
+  }								\
+  catch(omniORB::fatalException& fe) {				\
     hppCorbaDout (error, "CORBA::fatalException: " << msg);	\
-    return ret;								\
-  }									\
-  catch(...) {								\
+    return ret;							\
+  }								\
+  catch(...) {							\
     hppCorbaDout (error, "CORBA: unknown exception: " << msg);	\
-    return ret;								\
+    return ret;							\
   }
 
 namespace hpp
@@ -90,14 +90,14 @@ namespace hpp
     */
     template <class T>
     bool Server<T>::initORBandServers(int argc, char* argv[],
-				       bool inMultiThread)
+				      bool inMultiThread)
     {
       Object_var obj;
       PortableServer::ThreadPolicy_var threadPolicy;
       PortableServer::POA_var rootPoa;
 
       /*
-	 Fine granularity in exception handling
+	Fine granularity in exception handling
       */
 
       /*
@@ -170,14 +170,14 @@ namespace hpp
 	}
       HPP_CORBA_CATCH("failed to destroy thread policy", false)
 
-      return createAndActivateServers();
+	return createAndActivateServers();
     }
 
     template <class T>
     int Server<T>::startCorbaServer(const std::string& contextId,
-				 const std::string& contextKind,
-				 const std::string& objectId,
-				 const std::string& objectKind)
+				    const std::string& contextKind,
+				    const std::string& objectId,
+				    const std::string& objectKind)
     {
       try {
 	// Obtain a reference to objects, and register them in
@@ -203,7 +203,7 @@ namespace hpp
 	pman->activate();
       }
       HPP_CORBA_CATCH("failed to start CORBA server", false)
-      return 0;
+	return 0;
     }
 
 
@@ -226,45 +226,45 @@ namespace hpp
 
     template <class T>
     bool Server<T>::createAndActivateServers ()
-      {
-	try {
-	  servant_ = new T ();
-	}
-	HPP_CORBA_CATCH("failed to create implementation of ChppciRobot", false)
-
-	  try {
-
-	    servantId_ = poa_->activate_object(servant_);
-	  }
-	HPP_CORBA_CATCH("failed to activate implementation of ChppciRobot",
-			false)
-
-	  return true;
+    {
+      try {
+	servant_ = new T ();
       }
+      HPP_CORBA_CATCH("failed to create implementation of ChppciRobot", false)
+
+	try {
+
+	  servantId_ = poa_->activate_object(servant_);
+	}
+      HPP_CORBA_CATCH("failed to activate implementation of ChppciRobot",
+		      false)
+
+	return true;
+    }
 
     template <class T>
     void Server<T>::deactivateAndDestroyServers()
-      {
-	if (servant_) {
-	  poa_->deactivate_object(*servantId_);
-	  delete servant_;
-	}
+    {
+      if (servant_) {
+	poa_->deactivate_object(*servantId_);
+	delete servant_;
       }
+    }
 
 
     template <class T>
     bool Server<T>::createHppContext (const std::string& id,
-				   const std::string kind)
-      {
-	CosNaming::NamingContext_var rootContext;
-	Object_var localObj;
-	CosNaming::Name contextName;
+				      const std::string kind)
+    {
+      CosNaming::NamingContext_var rootContext;
+      Object_var localObj;
+      CosNaming::Name contextName;
 
-	try {
-	  // Obtain a reference to the root context of the Name service:
-	  localObj = orb_->resolve_initial_references("NameService");
-	}
-	HPP_CORBA_CATCH("failed to get the name service", false)
+      try {
+	// Obtain a reference to the root context of the Name service:
+	localObj = orb_->resolve_initial_references("NameService");
+      }
+      HPP_CORBA_CATCH("failed to get the name service", false)
 
 	try {
 	  // Narrow the reference returned.
@@ -279,7 +279,7 @@ namespace hpp
 	  hppCorbaDout (error, "Service required is invalid [does not exist].");
 	  return false;
 	}
-	HPP_CORBA_CATCH("failed to narrow the root naming context.", false)
+      HPP_CORBA_CATCH("failed to narrow the root naming context.", false)
 
 	try {
 	  // Bind a context called "hpp" to the root context:
@@ -310,7 +310,7 @@ namespace hpp
 	}
 	catch(COMM_FAILURE& ex) {
 	  hppCorbaDout (error, "Caught system exception COMM_FAILURE -- unable to contact the "
-		   << "naming service.");
+			<< "naming service.");
 	  return false;
 	}
 	catch(SystemException&) {
@@ -318,44 +318,44 @@ namespace hpp
 	  return false;
 	}
 
-	return true;
-      }
+      return true;
+    }
 
     template <class T>
     bool Server<T>::bindObjectToName(Object_ptr objref,
 				     CosNaming::Name objectName)
-      {
+    {
+      try {
 	try {
-	  try {
-	    hppContext_->bind(objectName, objref);
+	  hppContext_->bind(objectName, objref);
+	}
+	catch(CosNaming::NamingContext::AlreadyBound& ex)
+	  {
+	    hppContext_->rebind(objectName, objref);
 	  }
-	  catch(CosNaming::NamingContext::AlreadyBound& ex)
-	    {
-	      hppContext_->rebind(objectName, objref);
-	    }
-	  // Note: Using rebind() will overwrite any Object previously bound
-	  //       to /hpp/RobotConfig with localObj.
-	  //       Alternatively, bind() can be used, which will raise a
-	  //       CosNaming::NamingContext::AlreadyBound exception if the name
-	  //       supplied is already bound to an object.
+	// Note: Using rebind() will overwrite any Object previously bound
+	//       to /hpp/RobotConfig with localObj.
+	//       Alternatively, bind() can be used, which will raise a
+	//       CosNaming::NamingContext::AlreadyBound exception if the name
+	//       supplied is already bound to an object.
 
-	  // Amendment: When using OrbixNames, it is necessary to first try bind
-	  // and then rebind, as rebind on it's own will throw a NotFoundexception if
-	  // the Name has not already been bound. [This is incorrect behaviour -
-	  // it should just bind].
-	}
-	catch(COMM_FAILURE& ex) {
-	  hppCorbaDout (error, "Caught system exception COMM_FAILURE -- unable to contact the "
-		   << "naming service.");
-	  return false;
-	}
-	catch(SystemException&) {
-	  hppCorbaDout(error, "Caught a SystemException while binding object to name service.");
-	  return false;
-	}
-
-	return true;
+	// Amendment: When using OrbixNames, it is necessary to first try bind
+	// and then rebind, as rebind on it's own will throw a NotFoundexception if
+	// the Name has not already been bound. [This is incorrect behaviour -
+	// it should just bind].
       }
+      catch(COMM_FAILURE& ex) {
+	hppCorbaDout (error, "Caught system exception COMM_FAILURE -- unable to contact the "
+		      << "naming service.");
+	return false;
+      }
+      catch(SystemException&) {
+	hppCorbaDout(error, "Caught a SystemException while binding object to name service.");
+	return false;
+      }
+
+      return true;
+    }
 
   } // end of namespace corba.
 } // end of namespace hpp.

@@ -68,8 +68,8 @@ namespace hpp
       }
     } // end of anonymous namespace.
 
-
-    Server<T>::Server(int argc, const char *argv[], bool inMultiThread)
+    template <class T>
+    Server<T>::Server(int argc, char *argv[], bool inMultiThread)
     {
       // Register log function.
       omniORB::setLogFunction (&logFunction);
@@ -77,7 +77,8 @@ namespace hpp
     }
 
     /// \brief Shutdown CORBA server
-    Server::~Server()
+    template <class T>
+    Server<T>::~Server()
     {
       deactivateAndDestroyServers();
       orb_->shutdown(0);
@@ -87,8 +88,8 @@ namespace hpp
     /*
       CORBA SERVER INITIALIZATION
     */
-
-    bool Server::initORBandServers(int argc, const char* argv[],
+    template <class T>
+    bool Server<T>::initORBandServers(int argc, char* argv[],
 				       bool inMultiThread)
     {
       Object_var obj;
@@ -103,7 +104,7 @@ namespace hpp
 	ORB init
       */
       try {
-	orb_ = ORB_init (argc, const_cast<char **> (argv));
+	orb_ = ORB_init (argc, argv);
 	if (is_nil(orb_)) {
 	  hppCorbaDout (error, "failed to initialize ORB");
 	  return false;
@@ -172,7 +173,8 @@ namespace hpp
       return createAndActivateServers();
     }
 
-    int Server::startCorbaServer(const std::string& contextId,
+    template <class T>
+    int Server<T>::startCorbaServer(const std::string& contextId,
 				 const std::string& contextKind,
 				 const std::string& objectId,
 				 const std::string& objectKind)
@@ -188,8 +190,8 @@ namespace hpp
 	// Bind object with name Robot to the hppContext:
 	CosNaming::Name objectName;
 	objectName.length(1);
-	objectName[0].id   = (const char*) id;   // string copied
-	objectName[0].kind = (const char*) kind; // string copied
+	objectName[0].id   = (const char*) objectId.c_str();
+	objectName[0].kind = (const char*) objectKind.c_str();
 
 	if(!bindObjectToName(object, objectName)) {
 	  return -1;
@@ -206,7 +208,8 @@ namespace hpp
 
 
     /// \brief If CORBA requests are pending, process them
-    int Server::processRequest (bool loop)
+    template <class T>
+    int Server<T>::processRequest (bool loop)
     {
       if (loop)
 	{
@@ -221,8 +224,8 @@ namespace hpp
       return 0;
     }
 
-      bool
-      Server::createAndActivateServers ()
+    template <class T>
+    bool Server<T>::createAndActivateServers ()
       {
 	try {
 	  servant_ = new T ();
@@ -239,7 +242,8 @@ namespace hpp
 	  return true;
       }
 
-      void Server::deactivateAndDestroyServers()
+    template <class T>
+    void Server<T>::deactivateAndDestroyServers()
       {
 	if (servant_) {
 	  poa_->deactivate_object(*servantId_);
@@ -248,7 +252,8 @@ namespace hpp
       }
 
 
-    bool Server::createHppContext (const std::string& id,
+    template <class T>
+    bool Server<T>::createHppContext (const std::string& id,
 				   const std::string kind)
       {
 	CosNaming::NamingContext_var rootContext;
@@ -280,8 +285,8 @@ namespace hpp
 	  // Bind a context called "hpp" to the root context:
 
 	  contextName.length(1);
-	  contextName[0].id   = (const char*) id;   // string copied
-	  contextName[0].kind = (const char*) kind; // string copied
+	  contextName[0].id   = (const char*) id.c_str();   // string copied
+	  contextName[0].kind = (const char*) kind.c_str(); // string copied
 	  // Note on kind: The kind field is used to indicate the type
 	  // of the object. This is to avoid conventions such as that used
 	  // by files (name.type -- e.g. hpp.ps = postscript etc.)
@@ -316,8 +321,9 @@ namespace hpp
 	return true;
       }
 
-      bool Server::bindObjectToName(Object_ptr objref,
-						 CosNaming::Name objectName)
+    template <class T>
+    bool Server<T>::bindObjectToName(Object_ptr objref,
+				     CosNaming::Name objectName)
       {
 	try {
 	  try {

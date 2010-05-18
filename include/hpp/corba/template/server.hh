@@ -11,6 +11,9 @@
 #ifndef HPP_CORBA_SERVER_HH
 # define HPP_CORBA_SERVER_HH
 
+#include <string>
+# include <omniORB4/CORBA.h>
+
 /**
 
 */
@@ -19,7 +22,7 @@ namespace hpp
 {
   namespace corba
   {
-    template <class T> Server
+    template <class T> class Server
     {
     public:
       /**
@@ -30,7 +33,7 @@ namespace hpp
 	 \note It is recommended to configure your Corba implementation through environment
 	 variables and to set argc to 1 and argv to any string.
       */
-      Server (int argc, const char* argv[], bool multiThread = false);
+      Server (int argc, char* argv[], bool multiThread = false);
 
       /// \brief Shutdown CORBA server
       ~Server ();
@@ -67,7 +70,7 @@ namespace hpp
 	 \param argc, argv parameter to feed ORB initialization.
 	 \param inMultiThread whether the server may process request using multithred policy.
       */
-      bool initORBandServers (int argc, const char* argv[],
+      bool initORBandServers (int argc, char* argv[],
 			      bool inMultiThread);
 
       /**
@@ -106,5 +109,5 @@ namespace hpp
   } // end of namespace corba.
 } // end of namespace hpp.
 
-#include "hpp/corba/server.hh"
+#include "hpp/corba/template/server.hxx"
 #endif

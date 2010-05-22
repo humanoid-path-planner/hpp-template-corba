@@ -1,0 +1,4 @@
+2010/05/22 Release 0.2
+
+	   * This package is intended to ease construction of CORBA servers by
+	     templating actions that are common to all servers.

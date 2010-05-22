@@ -7,7 +7,7 @@ actions that are common to all servers.
 
 \section hpp_template_corba_sec_principle
 
-This package only contains one template class hpp::corba::Server. The paramter
+This package only contains one template class hpp::corba::Server. The parameter
 of this template class is the implementation of an idl interface.
 
 \section hpp_template_corba_sec_how_to How to

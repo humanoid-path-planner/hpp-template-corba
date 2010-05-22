@@ -14,14 +14,17 @@
 #include <string>
 # include <omniORB4/CORBA.h>
 
-/**
-
-*/
-
 namespace hpp
 {
   namespace corba
   {
+    /**
+       \brief Template CORBA server
+       
+       For information on how to use see the \ref hpp_template_corba_sec_how_to
+       section of the main documentation page
+    */
+
     template <class T> class Server
     {
     public:

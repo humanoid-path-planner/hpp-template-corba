@@ -103,14 +103,14 @@ from omniORB import CORBA
 import CosNaming
 import sys
 
-import hpp_corba
 orb = CORBA.ORB_init (sys.argv, CORBA.ORB_ID)
 obj = orb.resolve_initial_references("NameService")
 rootContext = obj._narrow(CosNaming.NamingContext)
 
 name = [CosNaming.NameComponent ("cId", "cKind"), CosNaming.NameComponent ("oId", "oKind")]
 obj = rootContext.resolve (name)
-client = obj._narrow(hpp.MyInterface)
+from hpp_corba.hpp import *
+client = obj._narrow(MyInterface)
 \endcode
 you can send request to the server as follows.
 \code

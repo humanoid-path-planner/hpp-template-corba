@@ -89,14 +89,13 @@ to start a name server. Your server will be referenced in the name server by
 \subsection hpp_template_corba_subsec_client Implementing the client
 
 In this section, we implement a python client for the above server.
-  
+
 The first step consists in compiling <c>interface.idl</c> to generate python
 stubs:
 \code
 omniidl -bpython -Wbpackage=hpp_corba interface.idl
 \endcode
-A new directory <c>hpp_corba</c> is created. If you type the following lines in
-a python terminal,
+A new directory <c>hpp_corba</c> is created. The following lines implement a python client,
 \code
 # File client.py
 from omniORB import CORBA
@@ -112,8 +111,30 @@ obj = rootContext.resolve (name)
 from hpp_corba.hpp import *
 client = obj._narrow(MyInterface)
 \endcode
-you can send request to the server as follows.
+
+\subsection hpp_template_corba_subsec_running Running the server and client
+
+You need 3 terminals.
+
+In the first terminal, run the name server
 \code
-print client.sum(2.5, 3.5)
+omniNames -start
 \endcode
+in the second terminal, run the server:
+\code
+./server
+\endcode
+
+in the third terminal, open a python terminal
+\code
+python
+Python 2.6.2 (r262:71600, Jan 25 2010, 18:46:45)
+[GCC 4.4.2 20091222 (Red Hat 4.4.2-20)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from client import client
+>>> client.sum(1.5, 2.5)
+4.0
+>>>
+\endcode
+
 */

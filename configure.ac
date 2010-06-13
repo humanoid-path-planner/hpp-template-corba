@@ -90,13 +90,6 @@ AC_SUBST([PACKAGE_CPPNAME],
 AC_CONFIG_FILES([include/hpp/corba/config.hh])
 
 ## ------------ ##
-## Test-suite.  ##
-## ------------ ##
-
-AC_CONFIG_TESTDIR([tests])
-AM_MISSING_PROG([AUTOM4TE], [autom4te])
-
-## ------------ ##
 ## Pkg-config.  ##
 ## ------------ ##
 

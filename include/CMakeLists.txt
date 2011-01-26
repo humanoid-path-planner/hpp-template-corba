@@ -16,6 +16,6 @@
 SET(HPP_CORBA_ENABLE_HPP_UTIL 0)
 CONFIG_FILES(hpp/corba/template/debug.hh)
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corba/template/debug.hh
-  DESTINATION include/hpp/corba/template/debug.hh
+  DESTINATION include/hpp/corba/template
   PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_WRITE
 )

@@ -21,6 +21,7 @@ INCLUDE(cmake/cpack.cmake)
 SET(PROJECT_NAME hpp-template-corba)
 SET(PROJECT_DESCRIPTION "Template corba server")
 SET(PROJECT_URL "http://github.com/laas/hpp-template-corba")
+SET(PROJECT_VERSION 0.4.99)
 
 SET(CUSTOM_HEADER_DIR "hpp/corba/template")
 

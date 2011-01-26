@@ -13,33 +13,9 @@
 # received a copy of the GNU Lesser General Public License along with
 # dynamic-graph. If not, see <http://www.gnu.org/licenses/>.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-
-INCLUDE(cmake/base.cmake)
-INCLUDE(cmake/cpack.cmake)
-
-SET(PROJECT_NAME hpp-template-corba)
-SET(PROJECT_DESCRIPTION "Template corba server")
-SET(PROJECT_URL "http://github.com/laas/hpp-template-corba")
-SET(PROJECT_VERSION 0.4.99)
-
-SET(CUSTOM_HEADER_DIR "hpp/corba/template")
-
-# Defines paths.
-SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
-
-SETUP_PROJECT()
-
-# Trigger dependency to jrl-mal
-ADD_REQUIRED_DEPENDENCY("omniORB4")
-
-SET(${PROJECT_NAME}_HEADERS
-  include/hpp/corba/template/doc.hh
-  include/hpp/corba/template/server.hh
-  include/hpp/corba/template/server.hxx
+SET(HPP_CORBA_ENABLE_HPP_UTIL 0)
+CONFIG_FILES(hpp/corba/template/debug.hh)
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corba/template/debug.hh
+  DESTINATION include/hpp/corba/template/debug.hh
+  PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_WRITE
 )
-
-ADD_SUBDIRECTORY(doc)
-ADD_SUBDIRECTORY(include)
-
-SETUP_PROJECT_FINALIZE()

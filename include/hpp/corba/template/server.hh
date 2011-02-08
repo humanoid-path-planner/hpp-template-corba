@@ -61,6 +61,8 @@ namespace hpp
       /// \param loop if true, the function never returns; if false, the function processes pending requests and returns.
       int processRequest (bool loop);
 
+      /// \brief Return a reference to the implementation
+      T& implementation();
     private:
 
       /**

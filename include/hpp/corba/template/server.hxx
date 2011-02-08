@@ -85,6 +85,12 @@ namespace hpp
       delete servantId_;
     }
 
+    template <class T>
+    T& Server<T>::implementation()
+    {
+      return *servant_;
+    }
+
     /*
       CORBA SERVER INITIALIZATION
     */

@@ -35,8 +35,11 @@ namespace hpp
 
 	 \note It is recommended to configure your Corba implementation through environment
 	 variables and to set argc to 1 and argv to any string.
+
+	 If the default poaName is used, only one server at a time can be created.
       */
-      Server (int argc, char* argv[], bool multiThread = false);
+      Server (int argc, char* argv[], bool multiThread = false,
+	      const std::string& poaName = "child");
 
       /// \brief Shutdown CORBA server
       ~Server ();
@@ -76,7 +79,8 @@ namespace hpp
 	 \param inMultiThread whether the server may process request using multithred policy.
       */
       bool initORBandServers (int argc, char* argv[],
-			      bool inMultiThread);
+			      bool inMultiThread,
+			      const std::string& poaName);
 
       /**
 	 @}

@@ -19,6 +19,11 @@
 
 //FIXME: remove me.
 #define HPP_CORBA_CATCH(msg, ret)				\
+  catch(CORBA::UserException& exc) {				\
+    hppCorbaDout (error, "CORBA::UserException: " << msg << " " \
+		  << exc._name ());				\
+    return ret;							\
+  }								\
   catch(CORBA::SystemException&) {				\
     hppCorbaDout (error, "CORBA::SystemException: " << msg);	\
     return ret;							\
@@ -69,11 +74,12 @@ namespace hpp
     } // end of anonymous namespace.
 
     template <class T>
-    Server<T>::Server(int argc, char *argv[], bool inMultiThread)
+    Server<T>::Server(int argc, char *argv[], bool inMultiThread,
+		      const std::string& poaName)
     {
       // Register log function.
       omniORB::setLogFunction (&logFunction);
-      initORBandServers (argc, argv, inMultiThread);
+      initORBandServers (argc, argv, inMultiThread, poaName);
     }
 
     /// \brief Shutdown CORBA server
@@ -96,7 +102,8 @@ namespace hpp
     */
     template <class T>
     bool Server<T>::initORBandServers(int argc, char* argv[],
-				      bool inMultiThread)
+				      bool inMultiThread,
+				      const std::string& poaName)
     {
       Object_var obj;
       PortableServer::ThreadPolicy_var threadPolicy;
@@ -152,18 +159,21 @@ namespace hpp
 	/*
 	  Duplicate thread policy
 	*/
+	PolicyList policyList;
+        policyList.length(1);
 
 	try {
-	  PolicyList policyList;
-	  policyList.length(1);
 	  policyList[0]=PortableServer::ThreadPolicy::_duplicate(threadPolicy);
-
-	  poa_ =
-	    rootPoa->create_POA("child", PortableServer::POAManager::_nil(),
-				policyList);
-
 	}
-      HPP_CORBA_CATCH("failed to duplicate thread policy", false)
+	HPP_CORBA_CATCH("failed to duplicate thread policy", false)
+
+	try {
+	  poa_ =
+	    rootPoa->create_POA(poaName.c_str (), PortableServer::POAManager::_nil(),
+				policyList);
+	}
+	HPP_CORBA_CATCH("failed to create POA", false)
+
 
 	/*
 	  Destroy thread policy

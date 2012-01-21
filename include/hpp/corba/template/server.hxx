@@ -168,11 +168,19 @@ namespace hpp
 	HPP_CORBA_CATCH("failed to duplicate thread policy", false)
 
 	try {
-	  poa_ =
-	    rootPoa->create_POA(poaName.c_str (), PortableServer::POAManager::_nil(),
-				policyList);
+	  poa_ = rootPoa->find_POA(poaName.c_str(), false);
+	  if (is_nil(poa_)) {
+	    poa_ =
+	      rootPoa->create_POA(poaName.c_str (),
+				  PortableServer::POAManager::_nil(),
+				  policyList);
+	    hppCorbaDout (info, "Create POA: name = " << poaName);
+	  }
+	  else {
+	    hppCorbaDout (info, "POA " << poaName << " already exists.");
+	  }
 	}
-	HPP_CORBA_CATCH("failed to create POA", false)
+	HPP_CORBA_CATCH("failed to find or create POA", false)
 
 
 	/*

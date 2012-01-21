@@ -31,12 +31,11 @@ namespace hpp
       /**
 	 \brief Constructor
 	 \param argc, argv parameter to feed ORB initialization.
-	 \param inMultiThread whether the server may process request using multithred policy.
+	 \param inMultiThread whether the server may process request using
+	 multithread policy.
 
-	 \note It is recommended to configure your Corba implementation through environment
-	 variables and to set argc to 1 and argv to any string.
-
-	 If the default poaName is used, only one server at a time can be created.
+	 \note It is recommended to configure your Corba implementation through
+	 environment variables and to set argc to 1 and argv to any string.
       */
       Server (int argc, char* argv[], bool multiThread = false,
 	      const std::string& poaName = "child");

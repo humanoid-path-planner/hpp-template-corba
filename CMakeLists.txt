@@ -31,6 +31,7 @@ SETUP_PROJECT()
 
 # Trigger dependency to jrl-mal
 ADD_REQUIRED_DEPENDENCY("omniORB4")
+ADD_REQUIRED_DEPENDENCY("hpp-util >= 0.4")
 
 SET(${PROJECT_NAME}_HEADERS
   include/hpp/corba/template/doc.hh

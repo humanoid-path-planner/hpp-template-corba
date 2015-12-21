@@ -37,7 +37,7 @@ namespace hpp
 	 \note It is recommended to configure your Corba implementation through
 	 environment variables and to set argc to 1 and argv to any string.
       */
-      Server (int argc, char* argv[], bool multiThread = false,
+      Server (int argc, const char *argv[], bool multiThread = false,
 	      const std::string& poaName = "child");
 
       /// \brief Shutdown CORBA server
@@ -77,7 +77,7 @@ namespace hpp
 	 \param argc, argv parameter to feed ORB initialization.
 	 \param inMultiThread whether the server may process request using multithred policy.
       */
-      bool initORBandServers (int argc, char* argv[],
+      bool initORBandServers (int argc, const char *argv[],
 			      bool inMultiThread,
 			      const std::string& poaName);
 

@@ -74,7 +74,7 @@ namespace hpp
     } // end of anonymous namespace.
 
     template <class T>
-    Server<T>::Server(int argc, char *argv[], bool inMultiThread,
+    Server<T>::Server(int argc, const char* argv[], bool inMultiThread,
 		      const std::string& poaName)
     {
       // Register log function.
@@ -101,7 +101,7 @@ namespace hpp
       CORBA SERVER INITIALIZATION
     */
     template <class T>
-    bool Server<T>::initORBandServers(int argc, char* argv[],
+    bool Server<T>::initORBandServers(int argc, const char *argv[],
 				      bool inMultiThread,
 				      const std::string& poaName)
     {
@@ -117,7 +117,7 @@ namespace hpp
 	ORB init
       */
       try {
-	orb_ = ORB_init (argc, argv);
+	orb_ = ORB_init (argc, const_cast<char **> (argv));
 	if (is_nil(orb_)) {
 	  hppCorbaDout (error, "failed to initialize ORB");
 	  return false;

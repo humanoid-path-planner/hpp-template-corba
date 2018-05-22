@@ -170,13 +170,11 @@ namespace hpp
 	try {
 	  try {
 	    poa_ = rootPoa->find_POA(poaName.c_str(), false);
-	    hppCorbaDout (info, "POA " << poaName << " already exists.");
 	  } catch (const CORBA::UserException& exc) {
 	    poa_ =
 	      rootPoa->create_POA(poaName.c_str (),
 				  PortableServer::POAManager::_nil(),
 				  policyList);
-	    hppCorbaDout (info, "Create POA: name = " << poaName);
 	  }
 	}
 	HPP_CORBA_CATCH("failed to find or create POA", false)

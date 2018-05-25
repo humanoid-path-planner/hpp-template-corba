@@ -1,3 +1,8 @@
+2018/05/25 Release 1.1.4
+
+           * Synchornize cmake submodule
+           * suppress some unundestandable messages.
+
 2013/09/26 Release 1.1.3
 
     	   * Synchronize cmake submodule.

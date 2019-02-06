@@ -16,11 +16,11 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 INCLUDE(cmake/base.cmake)
-INCLUDE(cmake/cpack.cmake)
 
+SET(PROJECT_ORG humanoid-path-planner)
 SET(PROJECT_NAME hpp-template-corba)
 SET(PROJECT_DESCRIPTION "Template corba server")
-SET(PROJECT_URL "http://github.com/laas/hpp-template-corba")
+SET(PROJECT_URL "http://github.com/${PROJECT_ORG}/${PROJECT_NAME}")
 
 SET(CUSTOM_HEADER_DIR "hpp/corba/template")
 

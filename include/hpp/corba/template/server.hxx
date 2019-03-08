@@ -87,7 +87,6 @@ namespace hpp
     Server<T>::~Server()
     {
       deactivateAndDestroyServers();
-      orb_->shutdown(0);
       delete servantId_;
     }
 
@@ -266,8 +265,12 @@ namespace hpp
     void Server<T>::deactivateAndDestroyServers()
     {
       if (servant_) {
-	poa_->deactivate_object(*servantId_);
-	delete servant_;
+        try {
+          poa_->deactivate_object(*servantId_);
+          delete servant_;
+        } catch (const CORBA::OBJECT_NOT_EXIST& exc) {
+          // Servant was already deactivated and deleted.
+        }
       }
     }
 

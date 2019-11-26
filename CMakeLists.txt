@@ -13,33 +13,30 @@
 # received a copy of the GNU Lesser General Public License along with
 # dynamic-graph. If not, see <http://www.gnu.org/licenses/>.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
-INCLUDE(cmake/base.cmake)
-
-SET(PROJECT_ORG humanoid-path-planner)
 SET(PROJECT_NAME hpp-template-corba)
 SET(PROJECT_DESCRIPTION "Template corba server")
-SET(PROJECT_URL "http://github.com/${PROJECT_ORG}/${PROJECT_NAME}")
+
+INCLUDE(cmake/hpp.cmake)
 
 SET(CUSTOM_HEADER_DIR "hpp/corba/template")
 
 # Defines paths.
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
-SETUP_PROJECT()
+COMPUTE_PROJECT_ARGS(PROJECT_ARGS LANGUAGES CXX)
+PROJECT(${PROJECT_NAME} ${PROJECT_ARGS})
 
 # Trigger dependency to jrl-mal
 ADD_REQUIRED_DEPENDENCY("omniORB4")
 ADD_REQUIRED_DEPENDENCY("hpp-util >= 0.4")
 
 SET(${PROJECT_NAME}_HEADERS
-  include/hpp/corba/template/doc.hh
-  include/hpp/corba/template/server.hh
-  include/hpp/corba/template/server.hxx
+  include/${CUSTOM_HEADER_DIR}/doc.hh
+  include/${CUSTOM_HEADER_DIR}/server.hh
+  include/${CUSTOM_HEADER_DIR}/server.hxx
 )
 
 ADD_SUBDIRECTORY(doc)
 ADD_SUBDIRECTORY(include)
-
-SETUP_PROJECT_FINALIZE()

@@ -74,12 +74,13 @@ namespace hpp
     } // end of anonymous namespace.
 
     template <class T>
-    Server<T>::Server(int argc, const char* argv[], bool inMultiThread,
-		      const std::string& poaName)
+    Server<T>::Server(int argc, const char* argv[],
+                      const char* orb_identifier,
+                      const char* options[][2])
     {
       // Register log function.
       omniORB::setLogFunction (&logFunction);
-      initORBandServers (argc, argv, inMultiThread, poaName);
+      initORB(argc, argv, orb_identifier, options);
     }
 
     /// \brief Shutdown CORBA server
@@ -87,7 +88,6 @@ namespace hpp
     Server<T>::~Server()
     {
       deactivateAndDestroyServers();
-      delete servantId_;
     }
 
     template <class T>
@@ -100,96 +100,124 @@ namespace hpp
       CORBA SERVER INITIALIZATION
     */
     template <class T>
-    bool Server<T>::initORBandServers(int argc, const char *argv[],
-				      bool inMultiThread,
-				      const std::string& poaName)
+    bool Server<T>::initORB(int argc, const char *argv[],
+                            const char* orb_identifier,
+                            const char* options[][2])
     {
-      Object_var obj;
-      PortableServer::ThreadPolicy_var threadPolicy;
-      PortableServer::POA_var rootPoa;
-
-      /*
-	Fine granularity in exception handling
-      */
-
-      /*
-	ORB init
-      */
       try {
-	orb_ = ORB_init (argc, const_cast<char **> (argv));
+	orb_ = ORB_init (argc, const_cast<char **> (argv),
+            orb_identifier, options);
 	if (is_nil(orb_)) {
 	  hppCorbaDout (error, "failed to initialize ORB");
 	  return false;
 	}
       }
-      HPP_CORBA_CATCH("failed to initialize ORB", false)
+      HPP_CORBA_CATCH("failed to initialize ORB", false);
+    }
 
-	/*
-	  ORB init
-	*/
+    template <class T>
+    bool Server<T>::initRootPOA(bool inMultiThread)
+    {
+      Object_var obj;
+      PortableServer::ThreadPolicy_var threadPolicy;
+      PortableServer::POA_var rootPoa;
 
-	try {
-	  obj = orb_->resolve_initial_references("RootPOA");
-	}
-      HPP_CORBA_CATCH("failed to resolve initial references", false)
+      try {
+        obj = orb_->resolve_initial_references("RootPOA");
+      }
+      HPP_CORBA_CATCH("failed to resolve initial references", false);
 
-	/*
-	  Create thread policy
-	*/
+      /*
+         Create and duplicate thread policy
+         */
 
-	try {
-	  //
-	  // Make the CORBA object single-threaded to avoid GUI krash
-	  //
-	  // Create a sigle threaded policy object
-	  rootPoa = PortableServer::POA::_narrow(obj);
+      try {
+        //
+        // Make the CORBA object single-threaded to avoid GUI krash
+        //
+        // Create a sigle threaded policy object
+        rootPoa = PortableServer::POA::_narrow(obj);
 
-	  if (inMultiThread) {
-	    threadPolicy =
-	      rootPoa->create_thread_policy(PortableServer::ORB_CTRL_MODEL);
-	  }
-	  else {
-	    threadPolicy =
-	      rootPoa->create_thread_policy(PortableServer::MAIN_THREAD_MODEL);
-	  }
-	}
-      HPP_CORBA_CATCH("failed to create thread policy", false)
+        if (inMultiThread) {
+          threadPolicy =
+            rootPoa->create_thread_policy(PortableServer::ORB_CTRL_MODEL);
+        }
+        else {
+          threadPolicy =
+            rootPoa->create_thread_policy(PortableServer::MAIN_THREAD_MODEL);
+        }
+      }
+      HPP_CORBA_CATCH("failed to create thread policy", false);
 
-	/*
-	  Duplicate thread policy
-	*/
-	PolicyList policyList;
-        policyList.length(1);
+      PolicyList policyList;
+      policyList.length(1);
 
-	try {
-	  policyList[0]=PortableServer::ThreadPolicy::_duplicate(threadPolicy);
-	}
-	HPP_CORBA_CATCH("failed to duplicate thread policy", false)
+      try {
+        policyList[0]=PortableServer::ThreadPolicy::_duplicate(threadPolicy);
+      }
+      HPP_CORBA_CATCH("failed to duplicate thread policy", false);
 
-	try {
-	  try {
-	    poa_ = rootPoa->find_POA(poaName.c_str(), false);
-	  } catch (const CORBA::UserException& exc) {
-	    poa_ =
-	      rootPoa->create_POA(poaName.c_str (),
-				  PortableServer::POAManager::_nil(),
-				  policyList);
-	  }
-	}
-	HPP_CORBA_CATCH("failed to find or create POA", false)
+      // Find or create the POA
+      try {
+        try {
+          poa_ = rootPoa->find_POA("child", false);
+        } catch (const CORBA::UserException& exc) {
+          poa_ =
+            rootPoa->create_POA("child",
+                PortableServer::POAManager::_nil(),
+                policyList);
+        }
+      }
+      HPP_CORBA_CATCH("failed to find or create POA", false);
 
-	/*
-	  Destroy thread policy
-	*/
+      // Destroy policy object
+      try {
+        threadPolicy->destroy();
+      }
+      HPP_CORBA_CATCH("failed to destroy thread policy", false);
 
-	try {
-	  // Destroy policy object
-	  threadPolicy->destroy();
+      // create implementation
+      try {
+        servant_ = new T ();
+      }
+      HPP_CORBA_CATCH("failed to create the server implementation", false);
 
-	}
-      HPP_CORBA_CATCH("failed to destroy thread policy", false)
+      // activate implementation
+      try {
+        servantId_ = poa_->activate_object(servant_);
+      }
+      HPP_CORBA_CATCH("failed to activate the server implementation", false);
 
-	return createAndActivateServers();
+      return true;
+    }
+
+    template <class T>
+    bool Server<T>::initOmniINSPOA(const char* object_id)
+    {
+      Object_var obj;
+      try {
+        obj = orb_->resolve_initial_references("omniINSPOA");
+      }
+      HPP_CORBA_CATCH("failed to resolve initial references (omniINSPOA)", false);
+
+      try {
+        poa_ = PortableServer::POA::_narrow(obj);
+      }
+      HPP_CORBA_CATCH("failed to narrow the POA", false);
+
+      // create implementation
+      try {
+        servant_ = new T ();
+      }
+      HPP_CORBA_CATCH("failed to create the server implementation", false);
+
+      try {
+        servantId_ = PortableServer::string_to_ObjectId(object_id);
+        poa_->activate_object_with_id(servantId_, servant_);
+      }
+      HPP_CORBA_CATCH("failed to activate the server implementation", false);
+
+      return true;
     }
 
     template <class T>
@@ -216,15 +244,71 @@ namespace hpp
 	  return -1;
 	}
 	servant_->_remove_ref();
-
-	PortableServer::POAManager_var pman =
-	  poa_->the_POAManager();
-	pman->activate();
       }
       HPP_CORBA_CATCH("failed to start CORBA server", false)
 	return 0;
+
+      return startCorbaServer();
     }
 
+    template <class T>
+    int Server<T>::startCorbaServer(const std::string& contextId,
+				    const std::string& contextKind)
+    {
+      CosNaming::NamingContext_var rootContext;
+      Object_var localObj;
+
+      try {
+        // Obtain a reference to the root context of the Name service:
+        localObj = orb_->resolve_initial_references("NameService");
+      }
+      HPP_CORBA_CATCH("failed to get the name service", -1);
+
+      try {
+        // Narrow the reference returned.
+        rootContext = CosNaming::NamingContext::_narrow(localObj);
+        if( is_nil(rootContext) ) {
+          hppCorbaDout (error, "Failed to narrow the root naming context.");
+          return -1;
+        }
+      }
+      catch(InvalidName& ex) {
+        // This should not happen!
+        hppCorbaDout (error, "Service required is invalid [does not exist].");
+        return -1;
+      }
+      HPP_CORBA_CATCH("failed to narrow the root naming context.", -1);
+
+      try {
+	// Obtain a reference to objects, and register them in
+	// the naming service.
+	Object_var object = servant_->_this();
+
+	// Bind object with name
+	CosNaming::Name objectName;
+	objectName.length(1);
+	objectName[0].id   = (const char*) contextId.c_str();
+	objectName[0].kind = (const char*) contextKind.c_str();
+
+	if(!bindObjectToName(rootContext, object, objectName))
+	  return -1;
+	servant_->_remove_ref();
+      }
+      HPP_CORBA_CATCH("failed to start CORBA server", -1)
+
+      return startCorbaServer();
+    }
+
+    template <class T>
+    int Server<T>::startCorbaServer()
+    {
+      try {
+        PortableServer::POAManager_var pman = poa_->the_POAManager();
+        pman->activate();
+      }
+      HPP_CORBA_CATCH("failed to start CORBA server", false);
+      return 0;
+    }
 
     /// \brief If CORBA requests are pending, process them
     template <class T>
@@ -244,29 +328,11 @@ namespace hpp
     }
 
     template <class T>
-    bool Server<T>::createAndActivateServers ()
-    {
-      try {
-	servant_ = new T ();
-      }
-      HPP_CORBA_CATCH("failed to create implementation of ChppciRobot", false)
-
-	try {
-
-	  servantId_ = poa_->activate_object(servant_);
-	}
-      HPP_CORBA_CATCH("failed to activate implementation of ChppciRobot",
-		      false)
-
-	return true;
-    }
-
-    template <class T>
     void Server<T>::deactivateAndDestroyServers()
     {
       if (servant_) {
         try {
-          poa_->deactivate_object(*servantId_);
+          poa_->deactivate_object(servantId_);
           delete servant_;
         } catch (const CORBA::OBJECT_NOT_EXIST& exc) {
           // Servant was already deactivated and deleted.
@@ -348,33 +414,39 @@ namespace hpp
     bool Server<T>::bindObjectToName(Object_ptr objref,
 				     CosNaming::Name objectName)
     {
-      try {
-	try {
-	  hppContext_->bind(objectName, objref);
-	}
-	catch(CosNaming::NamingContext::AlreadyBound& ex)
-	  {
-	    hppContext_->rebind(objectName, objref);
-	  }
-	// Note: Using rebind() will overwrite any Object previously bound
-	//       to /hpp/RobotConfig with localObj.
-	//       Alternatively, bind() can be used, which will raise a
-	//       CosNaming::NamingContext::AlreadyBound exception if the name
-	//       supplied is already bound to an object.
+      return bindObjectToName(hppContext_, objref, objectName);
+    }
 
-	// Amendment: When using OrbixNames, it is necessary to first try bind
-	// and then rebind, as rebind on it's own will throw a NotFoundexception if
-	// the Name has not already been bound. [This is incorrect behaviour -
-	// it should just bind].
+    template <class T>
+    bool Server<T>::bindObjectToName (CosNaming::NamingContext_ptr context,
+          CORBA::Object_ptr objref,
+          CosNaming::Name objectName)
+    {
+      try {
+        context->bind(objectName, objref);
       }
+      catch(CosNaming::NamingContext::AlreadyBound& ex)
+      {
+        context->rebind(objectName, objref);
+      }
+      // Note: Using rebind() will overwrite any Object previously bound
+      //       to /hpp/RobotConfig with localObj.
+      //       Alternatively, bind() can be used, which will raise a
+      //       CosNaming::NamingContext::AlreadyBound exception if the name
+      //       supplied is already bound to an object.
+
+      // Amendment: When using OrbixNames, it is necessary to first try bind
+      // and then rebind, as rebind on it's own will throw a NotFoundexception if
+      // the Name has not already been bound. [This is incorrect behaviour -
+      // it should just bind].
       catch(COMM_FAILURE& ex) {
-	hppCorbaDout (error, "Caught system exception COMM_FAILURE -- unable to contact the "
-		      << "naming service.");
-	return false;
+        hppCorbaDout (error, "Caught system exception COMM_FAILURE -- unable to contact the "
+            << "naming service.");
+        return false;
       }
       catch(SystemException&) {
-	hppCorbaDout(error, "Caught a SystemException while binding object to name service.");
-	return false;
+        hppCorbaDout(error, "Caught a SystemException while binding object to name service.");
+        return false;
       }
 
       return true;

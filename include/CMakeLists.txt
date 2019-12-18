@@ -13,7 +13,6 @@
 # received a copy of the GNU Lesser General Public License along with
 # dynamic-graph. If not, see <http://www.gnu.org/licenses/>.
 
-SET(HPP_CORBA_ENABLE_HPP_UTIL 0)
 CONFIG_FILES(hpp/corba/template/debug.hh)
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corba/template/debug.hh
   DESTINATION include/hpp/corba/template

@@ -14,18 +14,11 @@
 # if @HPP_CORBA_ENABLE_HPP_UTIL@
 
 # include <hpp/util/debug.hh>
-#  define hppCorbaDebug(statement) hppDebug(statement)
-#  define hppCorbaDebugStatement(statement) hppDebugStatement(statement)
 #  define hppCorbaDout(channel, data) hppDout(channel, data)
-#  define hppCorbaDoutFatal(channel, data) hppDoutFatal(channel, data)
 
 #else
 
-#  define hppCorbaDebug(statement)
-#  define hppCorbaDebugStatement(statement)
-#  define hppCorbaDout(channel, data) \
-  std::cout << "CORBA: "  << data << std::endl
-#  define hppCorbaDoutFatal(channel, data)
+#  define hppCorbaDout(channel, data)
 
 #endif
 

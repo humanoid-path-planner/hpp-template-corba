@@ -18,14 +18,7 @@ namespace hpp
 {
   namespace corba
   {
-    /**
-       \brief Template CORBA server
-       
-       For information on how to use see the \ref hpp_template_corba_sec_how_to
-       section of the main documentation page
-    */
-
-    template <class T> class Server
+    class ServerBase
     {
     public:
       /**
@@ -35,7 +28,7 @@ namespace hpp
 	 \note It is recommended to configure your Corba implementation through
 	 environment variables and to set argc to 1 and argv to any string.
       */
-      Server (int argc, const char *argv[],
+      ServerBase (int argc, const char *argv[],
           const char* orb_identifier="",
           const char* options[][2]=0);
 
@@ -50,24 +43,14 @@ namespace hpp
       bool initORB (int argc, const char *argv[],
           const char* orb_identifier,
           const char* options[][2]);
-      /** Initialize a root POA
-       * This is suitable for multithreading and for using a name service.
-       * \param inMultiThread whether the server may process request using
-       *        multithread policy.
-       */
       bool initRootPOA(bool inMultiThread);
-      /** Initialize a root POA
-       * This cannot be multithreaded. It is suitable to serve an object at a
-       * fixed address. The address can be set using the ORB endPoint option.
-       * \param object_id the object name, use in the address (corbaloc:iiop:host:port/object_id)
-       */
-      bool initOmniINSPOA(const char* object_id);
+      bool initOmniINSPOA();
       /**
 	 \}
       */
 
       /// \brief Shutdown CORBA server
-      ~Server ();
+      virtual ~ServerBase ();
 
       /// \brief Initialize CORBA server to process requests from clients and
       ///        declare it to the NameService (DNS for CORBA)
@@ -103,9 +86,12 @@ namespace hpp
       /// \param loop if true, the function never returns; if false, the function processes pending requests and returns.
       int processRequest (bool loop);
 
-      /// \brief Return a reference to the implementation
-      T& implementation();
+      PortableServer::POA_var main_poa ()
+      {
+        return main_poa_;
+      }
 
+      /// The Portable Object Adapter used to active the server
       PortableServer::POA_var poa ()
       {
         return poa_;
@@ -116,13 +102,80 @@ namespace hpp
         return orb_;
       }
 
-    private:
-
+    protected:
       CORBA::ORB_var orb_;
-      PortableServer::POA_var poa_;
+      PortableServer::POA_var poa_, main_poa_, ins_poa_;
 
+      /// \brief Corba context.
+      CosNaming::NamingContext_var hppContext_;
+
+      void setServant(CORBA::Object_ptr obj);
+
+    private:
       /// \brief Implementation of object
-      T* servant_;
+      CORBA::Object_var servant_;
+
+      /// \brief Create context.
+      bool createHppContext (const std::string& id, const std::string kind);
+
+      /// \brief Store objects in Corba name service.
+      bool bindObjectToName (CORBA::Object_ptr objref,
+			     CosNaming::Name objectName);
+
+      /// \brief Store objects in Corba name service.
+      bool bindObjectToName (CosNaming::NamingContext_ptr context,
+          CORBA::Object_ptr objref,
+          CosNaming::Name objectName);
+    };
+
+    /**
+       \brief Template CORBA server
+       
+       For information on how to use see the \ref hpp_template_corba_sec_how_to
+       section of the main documentation page
+    */
+    template <class T> class Server : public ServerBase
+    {
+    public:
+      /**
+	 \brief Constructor
+	 \param argc, argv parameter to feed ORB initialization.
+
+	 \note It is recommended to configure your Corba implementation through
+	 environment variables and to set argc to 1 and argv to any string.
+      */
+      Server (int argc, const char *argv[],
+          const char* orb_identifier="",
+          const char* options[][2]=0);
+
+      /**
+	 \name CORBA server initialization
+         \{
+      */
+      /** Initialize a root POA
+       * This is suitable for multithreading and for using a name service.
+       * \param inMultiThread whether the server may process request using
+       *        multithread policy.
+       */
+      bool initRootPOA(bool inMultiThread);
+      /** Initialize a root POA
+       * This cannot be multithreaded. It is suitable to serve an object at a
+       * fixed address. The address can be set using the ORB endPoint option.
+       * \param object_id the object name, use in the address (corbaloc:iiop:host:port/object_id)
+       */
+      bool initOmniINSPOA(const char* object_id);
+      /**
+	 \}
+      */
+
+      /// \brief Shutdown CORBA server
+      ~Server ();
+
+      /// \brief Return a reference to the implementation
+      T& implementation();
+
+    private:
+      T* impl_;
 
       /// \brief It seems that we need to store this object to
       /// deactivate the server.

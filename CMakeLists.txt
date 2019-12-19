@@ -19,6 +19,8 @@ SET(PROJECT_NAME hpp-template-corba)
 SET(PROJECT_DESCRIPTION "Template corba server")
 
 INCLUDE(cmake/hpp.cmake)
+INCLUDE(cmake/test.cmake)
+INCLUDE(cmake/idl.cmake)
 
 SET(CUSTOM_HEADER_DIR "hpp/corba/template")
 
@@ -49,3 +51,4 @@ PKG_CONFIG_APPEND_LIBS(${PROJECT_NAME})
 
 ADD_SUBDIRECTORY(doc)
 ADD_SUBDIRECTORY(include)
+ADD_SUBDIRECTORY(tests)

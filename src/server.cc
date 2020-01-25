@@ -8,9 +8,9 @@
 //
 // See the COPYING file for more information.
 
-#include <errno.h>
 #include <pthread.h>
 #include <iostream>
+#include <stdio.h>
 
 #include <hpp/corba/template/server.hh>
 
@@ -152,7 +152,17 @@ namespace hpp
       try {
         obj = orb_->resolve_initial_references("omniINSPOA");
       }
-      HPP_CORBA_CATCH("failed to resolve initial references (omniINSPOA)", false);
+      catch(CORBA::SystemException& e) {
+        std::cerr << "OmniORB::resolve_initial_references throws "
+          "CORBA::SystemException " << e.NP_minorString() << '\n';
+        perror("A possible reason");
+        return false;
+      }
+      catch(CORBA::Exception& e) {
+        std::cerr << "OmniORB::resolve_initial_references throws "
+          "CORBA::Exception" << std::endl;
+        return false;
+      }
 
       try {
         ins_poa_ = PortableServer::POA::_narrow(obj);

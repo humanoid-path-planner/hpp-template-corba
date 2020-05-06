@@ -1,0 +1,17 @@
+<?xml version='1.0'?> 
+ <package format='2'> 
+ <name>hpp-template-corba</name> 
+ <version>4.9.0</version> 
+ <description>Template corba server </description> 
+ 
+ <maintainer email='hpp@laas.fr'>Joseph Mirabel</maintainer> 
+ <license>LGPL</license> 
+ 
+ <!-- <url type='website'>https://github.com/humanoid-path-planner/hpp-template-corba </url> --> 
+ 
+ <author>Joseph Mirabel</author> 
+ <author>Florent Lamiraux et al.</author> 
+ 
+ <buildtool_depend>catkin</buildtool_depend> 
+ <depend>omniORB4</depend> 
+ </package>

@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
  <package format='2'>
  <name>hpp-template-corba</name>
- <version>4.10.0</version>
+ <version>4.11.0</version>
  <description>Template corba server </description>
 
  <maintainer email='hpp@laas.fr'>Joseph Mirabel</maintainer>

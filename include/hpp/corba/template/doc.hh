@@ -41,6 +41,7 @@ from <c>POA_hpp::MyInterface</c> (defined in <c>interface.hh</c>).
 #define HPP_CORBA_INTERFACE_IMPL_HH
 
 #include <omniORB4/CORBA.h>
+
 #include "interface.hh"
 
 class MyImplementation : public virtual POA_hpp::MyInterface
@@ -53,11 +54,13 @@ class MyImplementation : public virtual POA_hpp::MyInterface
 #endif //HPP_CORBA_INTERFACE_IMPL_HH
 \endcode
 You can now implement a server in two ways.
-\subsubsection hpp_template_corba_sec_how_to_server_nameserver Using a name server.
-\code
+\subsubsection hpp_template_corba_sec_how_to_server_nameserver Using a name
+server. \code
 //file server.cc
 #include <stdlib.h>
+
 #include <hpp/corba/template/server.hh>
+
 #include "my-interface.impl.hh"
 
 int main(int argc, char** argv)
@@ -71,7 +74,7 @@ int main(int argc, char** argv)
   const std::string objectKind("oKind");
 
   if (server.startCorbaServer(contextId, contextKind,
-			      objectId, objectKind) != 0) {
+                              objectId, objectKind) != 0) {
     exit (-1);
   }
   server.processRequest(true);
@@ -79,11 +82,13 @@ int main(int argc, char** argv)
 
 \endcode
 
-\subsubsection hpp_template_corba_sec_how_to_server_inspoa Using a fixed address.
-\code
+\subsubsection hpp_template_corba_sec_how_to_server_inspoa Using a fixed
+address. \code
 //file server.cc
 #include <stdlib.h>
+
 #include <hpp/corba/template/server.hh>
+
 #include "my-interface.impl.hh"
 
 int main(int argc, char** argv)
@@ -93,7 +98,7 @@ int main(int argc, char** argv)
   hpp::corba::Server<MyImplementation> server (argc, argv, "", options);
   server.initOmniINSPOA("server_name");
   // This line is mandatory only if you want to enable multithreading.
-  // It must be called after 
+  // It must be called after
   // server.initRootPOA(true);
 
   if (server.startCorbaServer() != 0) {
@@ -106,11 +111,11 @@ int main(int argc, char** argv)
 
 To compile the above file, use <c>omniORB</c> specific flags:
 \code
-  g++ -o server `pkg-config --cflags hpp-template-corba` `pkg-config --cflags omniORB4` `pkg-config --libs omniORB4` interfaceSK.cc server.cc
-\endcode
-  where <c>includedir</c> is the header installation directory of this package.
-You get an executable implementing your CORBA. To run the server, you need
-to start a name server. Your server will be referenced in the name server by
+  g++ -o server `pkg-config --cflags hpp-template-corba` `pkg-config --cflags
+omniORB4` `pkg-config --libs omniORB4` interfaceSK.cc server.cc \endcode where
+<c>includedir</c> is the header installation directory of this package. You get
+an executable implementing your CORBA. To run the server, you need to start a
+name server. Your server will be referenced in the name server by
   <c>cId.cKind/oId.oKind</c>
 
 
@@ -123,29 +128,24 @@ stubs:
 \code
 omniidl -bpython -Wbpackage=hpp_corba interface.idl
 \endcode
-A new directory <c>hpp_corba</c> is created. The following lines implement a python client,
+A new directory <c>hpp_corba</c> is created. The following lines implement a
+python client,
 
-\subsubsection hpp_template_corba_sec_how_to_client_nameserver Using a name server.
-\code
-# File client.py
-from omniORB import CORBA
-import CosNaming
-import sys
+\subsubsection hpp_template_corba_sec_how_to_client_nameserver Using a name
+server. \code # File client.py from omniORB import CORBA import CosNaming import
+sys
 
 orb = CORBA.ORB_init (sys.argv, CORBA.ORB_ID)
 obj = orb.resolve_initial_references("NameService")
 rootContext = obj._narrow(CosNaming.NamingContext)
 
-name = [CosNaming.NameComponent ("cId", "cKind"), CosNaming.NameComponent ("oId", "oKind")]
-obj = rootContext.resolve (name)
-from hpp_corba.hpp import *
+name = [CosNaming.NameComponent ("cId", "cKind"), CosNaming.NameComponent
+("oId", "oKind")] obj = rootContext.resolve (name) from hpp_corba.hpp import *
 client = obj._narrow(MyInterface)
 \endcode
 
-\subsubsection hpp_template_corba_sec_how_to_client_inspoa Using a fixed address.
-\code
-# File client.py
-from omniORB import CORBA
+\subsubsection hpp_template_corba_sec_how_to_client_inspoa Using a fixed
+address. \code # File client.py from omniORB import CORBA
 
 orb = CORBA.ORB_init (sys.argv, CORBA.ORB_ID)
 obj = orb.string_to_object(":::13331/server_name")

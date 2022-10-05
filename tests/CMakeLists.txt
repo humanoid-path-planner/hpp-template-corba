@@ -1,10 +1,10 @@
-GENERATE_IDL_CPP(echo ${CMAKE_SOURCE_DIR}/tests)
+generate_idl_cpp(echo ${CMAKE_SOURCE_DIR}/tests)
 
-ADD_UNIT_TEST(echo "echo.cc;${ALL_IDL_CPP_STUBS}")
+add_unit_test(echo "echo.cc;${ALL_IDL_CPP_STUBS}")
 
-ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
-ADD_DEPENDENCIES (echo generate_idl_cpp)
+add_custom_target(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
+add_dependencies(echo generate_idl_cpp)
 
-TARGET_LINK_LIBRARIES(echo ${PROJECT_NAME})
-TARGET_COMPILE_OPTIONS(echo PRIVATE "-Wno-unused-variable")
-PKG_CONFIG_USE_DEPENDENCY(echo omniORB4)
+target_link_libraries(echo ${PROJECT_NAME})
+target_compile_options(echo PRIVATE "-Wno-unused-variable")
+pkg_config_use_dependency(echo omniORB4)

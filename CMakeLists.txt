@@ -43,7 +43,8 @@ set(${PROJECT_NAME}_SOURCES src/server.cc)
 
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_SOURCES}
                                    ${${PROJECT_NAME}_HEADERS})
-target_include_directories(${PROJECT_NAME} PUBLIC $<INSTALL_INTERFACE:include>)
+target_include_directories(
+  ${PROJECT_NAME} PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 pkg_config_use_dependency(${PROJECT_NAME} omniORB4)
 
 if(HPP_CORBA_ENABLE_HPP_UTIL)

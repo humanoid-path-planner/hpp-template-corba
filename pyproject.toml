@@ -11,7 +11,7 @@ dependencies = [
   "cmeel-omniorb",
   "hpp-util"
 ]
-description = "Utility classes for testing (robust) equilibrium of a system in contact with the environment, and other centroidal dynamics methods."
+description = "Template corba server"
 license = "BSD-2-Clause"
 name = "hpp-template-corba"
 version = "5.0.0"

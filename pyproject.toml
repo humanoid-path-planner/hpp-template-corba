@@ -1,2 +1,23 @@
+[build-system]
+build-backend = "cmeel.build"
+requires = [
+  "cmeel-omniorb[build]",
+  "cmeel[build]",
+  "hpp-util[build]"
+]
+
+[project]
+dependencies = [
+  "cmeel-omniorb",
+  "hpp-util"
+]
+description = "Utility classes for testing (robust) equilibrium of a system in contact with the environment, and other centroidal dynamics methods."
+license = "BSD-2-Clause"
+name = "hpp-template-corba"
+version = "5.0.0"
+
 [tool.isort]
 profile = "black"
+
+[tool.tomlsort]
+all = true

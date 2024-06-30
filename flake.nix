@@ -37,8 +37,9 @@
           ...
         }:
         {
-          packages.default = pkgs.callPackage ./. {
-            hpp-util = inputs.hpp-util.packages.${system}.default;
+          packages = {
+            inherit (pkgs) cachix;
+            default = pkgs.callPackage ./. { hpp-util = inputs.hpp-util.packages.${system}.default; };
           };
           devShells.default = pkgs.mkShell { inputsFrom = [ self'.packages.default ]; };
         };

@@ -13,7 +13,7 @@
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
     hpp-util = {
-      url = "github:humanoid-path-planner/hpp-util/release/5.1.0";
+      url = "github:humanoid-path-planner/hpp-util";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-parts.follows = "flake-parts";
     };

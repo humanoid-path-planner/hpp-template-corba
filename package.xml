@@ -1,17 +1,31 @@
-<?xml version='1.0'?>
- <package format='2'>
- <name>hpp-template-corba</name>
- <version>6.0.0</version>
- <description>Template corba server </description>
+<?xml version="1.0"?>
+<package format="3">
+  <name>hpp-template-corba</name>
+  <version>6.0.0</version>
+  <description>Template corba server </description>
 
- <maintainer email='hpp@laas.fr'>Joseph Mirabel</maintainer>
- <license>LGPL</license>
+  <maintainer email="guilhem.saurel@laas.fr">Guilhem Saurel</maintainer>
 
- <!-- <url type='website'>https://github.com/humanoid-path-planner/hpp-template-corba </url> -->
+  <author>Joseph Mirabel</author>
+  <author>Florent Lamiraux et al.</author>
 
- <author>Joseph Mirabel</author>
- <author>Florent Lamiraux et al.</author>
+  <license>BSD-2</license>
 
- <buildtool_depend>catkin</buildtool_depend>
- <depend>omniORB4</depend>
- </package>
+  <url type="website">https://github.com/humanoid-path-planner/hpp-template-corba</url>
+  <url type="repository">https://github.com/humanoid-path-planner/hpp-template-corba</url>
+  <url type="bugtracker">https://github.com/humanoid-path-planner/hpp-template-corba/issues</url>
+
+  <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
+  <buildtool_depend>cmake</buildtool_depend>
+
+  <build_depend>doxygen</build_depend>
+
+  <depend>hpp-util</depend>
+  <depend>omniidl</depend>
+  <depend>omniorb</depend>
+
+  <export>
+    <build_type>cmake</build_type>
+  </export>
+</package>

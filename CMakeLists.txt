@@ -11,7 +11,7 @@
 # details.  You should have received a copy of the GNU Lesser General Public
 # License along with dynamic-graph. If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.22)
 
 set(PROJECT_NAME hpp-template-corba)
 set(PROJECT_DESCRIPTION "Template corba server")
@@ -31,14 +31,6 @@ else()
       TARGET jrl-cmakemodules::jrl-cmakemodules
       PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
     message(STATUS "JRL cmakemodules found on system at ${JRL_CMAKE_MODULES}")
-  elseif(${CMAKE_VERSION} VERSION_LESS "3.14.0")
-    message(
-      FATAL_ERROR
-        "\nCan't find jrl-cmakemodules. Please either:\n"
-        "  - use git submodule: 'git submodule update --init'\n"
-        "  - or install https://github.com/jrl-umi3218/jrl-cmakemodules\n"
-        "  - or upgrade your CMake version to >= 3.14 to allow automatic fetching\n"
-    )
   else()
     message(STATUS "JRL cmakemodules not found. Let's fetch it.")
     include(FetchContent)
@@ -92,5 +84,3 @@ pkg_config_append_libs(${PROJECT_NAME})
 add_subdirectory(doc)
 add_subdirectory(include)
 add_subdirectory(tests)
-
-install(FILES package.xml DESTINATION share/${PROJECT_NAME})

@@ -2,32 +2,33 @@
   description = "This package is intended to ease construction of CORBA servers by templating actions that are common to all servers";
 
   inputs = {
-    nixpkgs.url = "github:gepetto/nixpkgs";
-    flake-parts = {
-      url = "github:hercules-ci/flake-parts";
-      inputs.nixpkgs-lib.follows = "nixpkgs";
-    };
+    gepetto.url = "github:gepetto/nix";
+    flake-parts.follows = "gepetto/flake-parts";
+    nixpkgs.follows = "gepetto/nixpkgs";
+    nix-ros-overlay.follows = "gepetto/nix-ros-overlay";
+    systems.follows = "gepetto/systems";
+    treefmt-nix.follows = "gepetto/treefmt-nix";
   };
 
   outputs =
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "aarch64-darwin"
-        "x86_64-darwin"
-      ];
+      systems = import inputs.systems;
+      imports = [ inputs.gepetto.flakeModule ];
       perSystem =
-        { pkgs, self', ... }:
         {
-          devShells.default = pkgs.mkShell { inputsFrom = [ self'.packages.default ]; };
+          lib,
+          pkgs,
+          self',
+          ...
+        }:
+        {
           packages = {
             default = self'.packages.hpp-template-corba;
-            hpp-template-corba = pkgs.hpp-template-corba.overrideAttrs (_: {
+            hpp-template-corba = pkgs.hpp-template-corba.overrideAttrs {
               src = pkgs.lib.fileset.toSource {
                 root = ./.;
-                fileset = pkgs.lib.fileset.unions [
+                fileset = lib.fileset.unions [
                   ./CMakeLists.txt
                   ./doc
                   ./idl
@@ -37,7 +38,7 @@
                   ./tests
                 ];
               };
-            });
+            };
           };
         };
     };

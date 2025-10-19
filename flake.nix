@@ -26,7 +26,7 @@
           packages = {
             default = self'.packages.hpp-template-corba;
             hpp-template-corba = pkgs.hpp-template-corba.overrideAttrs {
-              src = pkgs.lib.fileset.toSource {
+              src = lib.fileset.toSource {
                 root = ./.;
                 fileset = lib.fileset.unions [
                   ./CMakeLists.txt

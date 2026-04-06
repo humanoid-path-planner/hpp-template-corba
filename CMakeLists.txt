@@ -22,24 +22,32 @@ set(CUSTOM_HEADER_DIR "hpp/corba/template")
 # Check if the submodule cmake have been initialized
 set(JRL_CMAKE_MODULES "${CMAKE_CURRENT_LIST_DIR}/cmake")
 if(EXISTS "${JRL_CMAKE_MODULES}/base.cmake")
-  message(STATUS "JRL cmakemodules found in 'cmake/' git submodule")
+    message(STATUS "JRL cmakemodules found in 'cmake/' git submodule")
 else()
-  find_package(jrl-cmakemodules QUIET CONFIG)
-  if(jrl-cmakemodules_FOUND)
-    get_property(
-      JRL_CMAKE_MODULES
-      TARGET jrl-cmakemodules::jrl-cmakemodules
-      PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
-    message(STATUS "JRL cmakemodules found on system at ${JRL_CMAKE_MODULES}")
-  else()
-    message(STATUS "JRL cmakemodules not found. Let's fetch it.")
-    include(FetchContent)
-    FetchContent_Declare(
-      "jrl-cmakemodules"
-      GIT_REPOSITORY "https://github.com/jrl-umi3218/jrl-cmakemodules.git")
-    FetchContent_MakeAvailable("jrl-cmakemodules")
-    FetchContent_GetProperties("jrl-cmakemodules" SOURCE_DIR JRL_CMAKE_MODULES)
-  endif()
+    find_package(jrl-cmakemodules QUIET CONFIG)
+    if(jrl-cmakemodules_FOUND)
+        get_property(
+            JRL_CMAKE_MODULES
+            TARGET jrl-cmakemodules::jrl-cmakemodules
+            PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+        )
+        message(
+            STATUS
+            "JRL cmakemodules found on system at ${JRL_CMAKE_MODULES}"
+        )
+    else()
+        message(STATUS "JRL cmakemodules not found. Let's fetch it.")
+        include(FetchContent)
+        FetchContent_Declare(
+            "jrl-cmakemodules"
+            GIT_REPOSITORY "https://github.com/jrl-umi3218/jrl-cmakemodules.git"
+        )
+        FetchContent_MakeAvailable("jrl-cmakemodules")
+        FetchContent_GetProperties(
+            "jrl-cmakemodules"
+            SOURCE_DIR JRL_CMAKE_MODULES
+        )
+    endif()
 endif()
 
 include("${JRL_CMAKE_MODULES}/hpp.cmake")
@@ -55,29 +63,34 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 add_required_dependency("omniORB4")
 option(HPP_CORBA_ENABLE_HPP_UTIL OFF "Use hpp-util to log messages.")
 if(HPP_CORBA_ENABLE_HPP_UTIL)
-  add_project_dependency(hpp-util REQUIRED)
+    add_project_dependency(hpp-util REQUIRED)
 endif(HPP_CORBA_ENABLE_HPP_UTIL)
 
 set(${PROJECT_NAME}_HEADERS
-    include/${CUSTOM_HEADER_DIR}/doc.hh include/${CUSTOM_HEADER_DIR}/server.hh
-    include/${CUSTOM_HEADER_DIR}/server.hxx)
+    include/${CUSTOM_HEADER_DIR}/doc.hh
+    include/${CUSTOM_HEADER_DIR}/server.hh
+    include/${CUSTOM_HEADER_DIR}/server.hxx
+)
 
 set(${PROJECT_NAME}_SOURCES src/server.cc)
 
-add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_SOURCES}
-                                   ${${PROJECT_NAME}_HEADERS})
+add_library(
+    ${PROJECT_NAME}
+    SHARED
+    ${${PROJECT_NAME}_SOURCES}
+    ${${PROJECT_NAME}_HEADERS}
+)
 target_include_directories(
-  ${PROJECT_NAME} PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+    ${PROJECT_NAME}
+    PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
 pkg_config_use_dependency(${PROJECT_NAME} omniORB4)
 
 if(HPP_CORBA_ENABLE_HPP_UTIL)
-  target_link_libraries(${PROJECT_NAME} hpp-util::hpp-util)
+    target_link_libraries(${PROJECT_NAME} hpp-util::hpp-util)
 endif(HPP_CORBA_ENABLE_HPP_UTIL)
 
-install(
-  TARGETS ${PROJECT_NAME}
-  EXPORT ${TARGETS_EXPORT_NAME}
-  DESTINATION lib)
+install(TARGETS ${PROJECT_NAME} EXPORT ${TARGETS_EXPORT_NAME} DESTINATION lib)
 
 pkg_config_append_libs(${PROJECT_NAME})
 

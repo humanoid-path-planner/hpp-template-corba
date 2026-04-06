@@ -13,6 +13,7 @@
 
 config_files(hpp/corba/template/debug.hh)
 install(
-  FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corba/template/debug.hh
-  DESTINATION include/hpp/corba/template
-  PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_WRITE)
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corba/template/debug.hh
+    DESTINATION include/hpp/corba/template
+    PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_WRITE
+)

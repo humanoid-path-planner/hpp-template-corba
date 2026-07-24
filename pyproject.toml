@@ -14,7 +14,7 @@ dependencies = [
 description = "Template corba server"
 license = "BSD-2-Clause"
 name = "hpp-template-corba"
-version = "9.0.0"
+version = "9.0.2"
 
 [tool.ruff.lint]
 extend-select = ["I", "NPY", "RUF", "UP", "W"]
